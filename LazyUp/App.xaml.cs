@@ -13,5 +13,19 @@ namespace LazyUp
     /// </summary>
     public partial class App : Application
     {
+        string closeInTray = ConfigurationManager.AppSettings["closeInTray"];
+        string shutdownModeValue;
+        App()
+        {
+            shutdownModeValue = (closeInTray ?? "true") == "true" ? "OnExplicitShutdown" : "OnMainWindowClose";
+                if (Enum.TryParse<ShutdownMode>(shutdownModeValue, out ShutdownMode shutdownMode))
+                {
+                    Current.ShutdownMode = shutdownMode;
+                }
+                else
+                {
+                    throw new Exception("Config error. No shutdownMode value with key closeInTray");
+                }
+        }
     }
 }

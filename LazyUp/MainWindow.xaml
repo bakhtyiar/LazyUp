@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LazyUp"
         mc:Ignorable="d"
-        Title="LazyUp" Height="401" Width="350"
+        Title="LazyUp" Height="429" Width="350"
                 xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
 
         >
@@ -28,27 +28,27 @@
             <TextBlock TextWrapping="Wrap" Text="Time interval between breaks" FontWeight="Bold" Margin="0 8 0 0"/>
             <StackPanel Orientation="Horizontal">
                 <StackPanel Orientation="Horizontal" Margin="0 0 16 0">
-                    <TextBox x:Name="breaksIntervalHours" TextWrapping="Wrap" MinWidth="30" MaxWidth="120" Margin="0 4 4 0"/>
+                    <TextBox x:Name="breaksIntervalHours" TextWrapping="Wrap" MinWidth="30" MaxWidth="120" Margin="0 4 4 0" Initialized="breaksIntervalHours_Initialized" TextChanged="breaksIntervalHours_TextChanged" LostFocus="breaksIntervalHours_LostFocus"/>
                     <TextBlock x:Name="breaksIntervalHours_TextBlock" TextWrapping="Wrap" Text="Hours" Margin="0 4 0 0"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <TextBox x:Name="breaksIntervalMinutes" TextWrapping="Wrap" MinWidth="30" MaxWidth="120" Margin="0 4 4 0"/>
+                    <TextBox x:Name="breaksIntervalMinutes" TextWrapping="Wrap" MinWidth="30" MaxWidth="120" Margin="0 4 4 0" Initialized="breaksIntervalMinutes_Initialized" TextChanged="breaksIntervalMinutes_TextChanged" LostFocus="breaksIntervalMinutes_LostFocus"/>
                     <TextBlock x:Name="breaksIntervalMinutes_TextBlock" TextWrapping="Wrap" Text="Minutes" Margin="0 4 0 0"/>
                 </StackPanel>
             </StackPanel>
             <TextBlock TextWrapping="Wrap" Text="Duration of break" FontWeight="Bold" Margin="0 8 0 0"/>
             <StackPanel Orientation="Horizontal">
                 <StackPanel Orientation="Horizontal" Margin="0 0 16 0">
-                    <TextBox x:Name="durationBreakHours" TextWrapping="Wrap" MinWidth="30" MaxWidth="120" Margin="0 4 4 0"/>
+                    <TextBox x:Name="durationBreakHours" TextWrapping="Wrap" MinWidth="30" MaxWidth="120" Margin="0 4 4 0" Initialized="durationBreakHours_Initialized" TextChanged="durationBreakHours_TextChanged" LostFocus="durationBreakHours_LostFocus"/>
                     <TextBlock x:Name="durationBreakHours_TextBlock" TextWrapping="Wrap" Text="Hours" Margin="0 4 0 0"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <TextBox x:Name="durationBreakMinutes" TextWrapping="Wrap" MinWidth="30" MaxWidth="120" Margin="0 4 4 0"/>
+                    <TextBox x:Name="durationBreakMinutes" TextWrapping="Wrap" MinWidth="30" MaxWidth="120" Margin="0 4 4 0" Initialized="durationBreakMinutes_Initialized" TextChanged="durationBreakMinutes_TextChanged" LostFocus="durationBreakMinutes_LostFocus"/>
                     <TextBlock x:Name="durationBreakMinutes_TextBlock" TextWrapping="Wrap" Text="Minutes" Margin="0 4 0 0"/>
                 </StackPanel>
             </StackPanel>
-            <CheckBox x:Name="IsToStartupWithSystem" Content="Startup with system" Margin="0 8 0 0"/>
-            <CheckBox x:Name="IsTostartInTray" Content="Start in tray" Margin="0 8 0 0"/>
+            <CheckBox x:Name="StartupWithSystemCheckBox" Content="Startup with system" Margin="0 8 0 0" Checked="StartupWithSystemCheckBox_Checked" Initialized="StartupWithSystemCheckBox_Initialized" Unchecked="StartupWithSystemCheckBox_Unchecked"/>
+            <CheckBox x:Name="CloseInTrayCheckBox" Content="Close in tray" Margin="0 8 0 0" Checked="CloseInTrayCheckBox_Checked" Initialized="CloseInTrayCheckBox_Initialized" Unchecked="CloseInTrayCheckBox_Unchecked"/>
 
         </StackPanel>
             <Grid Grid.Row="1" VerticalAlignment="Center">

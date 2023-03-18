@@ -24,13 +24,14 @@ namespace LazyUp
     {
         string lockScreenHeader = ConfigurationManager.AppSettings["lockScreenHeader"];
         string lockScreenParagraph = ConfigurationManager.AppSettings["lockScreenParagraph"];
-        string lockScreenBackgroundColor = ConfigurationManager.AppSettings["lockScreenBackgroundColor"];
+        string themeIsDark = ConfigurationManager.AppSettings["themeIsDark"];
         string durationBreakSec = ConfigurationManager.AppSettings["durationBreakSec"];
         string strictBreaks = ConfigurationManager.AppSettings["strictBreaks"];
 
         private int breakSecsLast;
         private int timeIntervalSec;
-        private Timer aTimer;
+        private Timer timerIntervalForChanges;
+        private Timer timerToClose;
 
         private delegate void TimeLastOutput();
         private void SetTimerText(TextBlock textBlock, ref int secsLast)
@@ -73,12 +74,25 @@ namespace LazyUp
         {
             breakSecsLast = Convert.ToInt32(durationBreakSec);
             timeIntervalSec = 1;
-            aTimer = new System.Timers.Timer();
-            aTimer.Interval = timeIntervalSec * 1000;
-            aTimer.Elapsed += OnTimedEvent;
-            aTimer.AutoReset = true;
-            aTimer.Enabled = true;
+
+            timerIntervalForChanges = new System.Timers.Timer();
+            timerIntervalForChanges.Interval = timeIntervalSec * 1000;
+            timerIntervalForChanges.Elapsed += OnTimedEvent;
+            timerIntervalForChanges.AutoReset = true;
+            timerIntervalForChanges.Enabled = true;
+
+            timerToClose = new System.Timers.Timer();
+            timerToClose.Interval = Convert.ToInt32(durationBreakSec) * 1000;
+            timerToClose.Elapsed += closeLockScreenOnTimeout;
+            timerToClose.AutoReset = false;
+            timerToClose.Enabled = true;
+
             InitializeComponent();
+        }
+
+        private void closeLockScreenOnTimeout(Object source, System.Timers.ElapsedEventArgs e)
+        {
+            Close();
         }
 
         private void Header_Initialized(object sender, EventArgs e)
