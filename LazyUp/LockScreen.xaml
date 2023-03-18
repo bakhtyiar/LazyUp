@@ -1,0 +1,21 @@
+﻿<Window x:Class="LazyUp.LockScreen"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LazyUp"
+        mc:Ignorable="d"
+        Title="LockScreen" Height="450" Width="800"
+        WindowState="Maximized"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        >
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock x:Name="Header" Initialized="Header_Initialized" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" />
+            <TextBlock x:Name="Paragraph" Initialized="Paragraph_Initialized" FontSize="14" HorizontalAlignment="Center" Margin="0,4,0,0" />
+            <TextBlock x:Name="TimeLast" Initialized="TimeLast_Initialized" FontSize="14" HorizontalAlignment="Center" Margin="0,4,0,0" />
+            <ProgressBar x:Name="TimelineBar" Minimum="0" Maximum="100" MinWidth="240" MinHeight="4" Margin="0,16,0,0" Initialized="TimelineBar_Initialized"/>
+        </StackPanel>
+    </Grid>
+</Window>
