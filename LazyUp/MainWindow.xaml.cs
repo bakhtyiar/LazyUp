@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Configuration;
 using System.Reflection;
 using System.Drawing;
+using System.Windows.Interop;
 
 namespace LazyUp
 {
@@ -39,6 +40,8 @@ namespace LazyUp
 
         int breakDurationHoursTemp;
         int breakDurationMinutesTemp;
+
+        private System.Drawing.Icon logoIcon = new System.Drawing.Icon("Resources/logo.ico");
 
         // public static string BaseDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
@@ -244,6 +247,14 @@ namespace LazyUp
         private void StartInTrayCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             startInTray = "false";
+        }
+
+        private void Window_Initialized(object sender, EventArgs e)
+        {
+            this.Icon = Imaging.CreateBitmapSourceFromHIcon(
+            logoIcon.Handle,
+            Int32Rect.Empty,
+            BitmapSizeOptions.FromEmptyOptions()); ;
         }
     }
 }

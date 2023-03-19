@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:LazyUp"
         mc:Ignorable="d"
         Title="LazyUp" Height="429" Width="350"
-                xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" Closing="Window_Closing"
+                xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" Closing="Window_Closing" Initialized="Window_Initialized"
 
         >
     <Grid Margin="8">
