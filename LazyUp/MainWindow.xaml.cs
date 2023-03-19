@@ -110,14 +110,24 @@ namespace LazyUp
             lockScreenParagraph = getValueTextBox(sender);
         }
 
+        private void radiobtnThemeDark_Initialized(object sender, EventArgs e)
+        {
+            radiobtnThemeDark.IsChecked = themeIsDark == "true";
+        }
+
         private void radiobtnThemeDark_Checked(object sender, RoutedEventArgs e)
         {
+            themeIsDark = "true";
+        }
 
+        private void radiobtnThemeLight_Initialized(object sender, EventArgs e)
+        {
+            radiobtnThemeLight.IsChecked = themeIsDark == "false";
         }
 
         private void radiobtnThemeLight_Checked(object sender, RoutedEventArgs e)
         {
-
+            themeIsDark = "false";
         }
 
         private void breaksIntervalHours_Initialized(object sender, EventArgs e)

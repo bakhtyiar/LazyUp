@@ -22,8 +22,8 @@
             <TextBox x:Name="LockScreenParagraph" TextWrapping="Wrap" Width="240" Margin="0 4 0 0" TextChanged="LockScreenParagraph_TextChanged" Initialized="LockScreenParagraph_Initialized"/>
             <TextBlock TextWrapping="Wrap" Text="Theme" FontWeight="Bold" Margin="0 8 0 0"/>
             <StackPanel Orientation="Horizontal" Margin="0 4 0 0">
-                <RadioButton x:Name="radiobtnThemeLight" Content="Light" Margin="0 0 8 0" Checked="radiobtnThemeLight_Checked"/>
-                <RadioButton x:Name="radiobtnThemeDark" Content="Dark" Checked="radiobtnThemeDark_Checked" />
+                <RadioButton x:Name="radiobtnThemeLight" GroupName="visualTheme" Content="Light" Margin="0 0 8 0" Checked="radiobtnThemeLight_Checked" Initialized="radiobtnThemeLight_Initialized"/>
+                <RadioButton x:Name="radiobtnThemeDark" GroupName="visualTheme" Content="Dark" Checked="radiobtnThemeDark_Checked" Initialized="radiobtnThemeDark_Initialized" />
             </StackPanel>
             <TextBlock TextWrapping="Wrap" Text="Time interval between breaks" FontWeight="Bold" Margin="0 8 0 0"/>
             <StackPanel Orientation="Horizontal">

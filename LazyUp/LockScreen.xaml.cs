@@ -103,17 +103,33 @@ namespace LazyUp
         private void closeLockScreenOnTimeout(Object source, System.Timers.ElapsedEventArgs e)
         {
             // isWindowClosable = false;
+            Dispatcher.BeginInvoke(() => { this.Visibility = Visibility.Hidden; });
             Dispatcher.BeginInvoke(() => { this.Close(); });
         }
 
         private void Header_Initialized(object sender, EventArgs e)
         {
             Header.Text = lockScreenHeader;
+            if (themeIsDark == "true")
+            {
+                Header.Foreground = Brushes.White;
+            } else
+            {
+                Header.Foreground = Brushes.Black;
+            }
         }
 
         private void Paragraph_Initialized(object sender, EventArgs e)
         {
             Paragraph.Text = lockScreenParagraph;
+            if (themeIsDark == "true")
+            {
+                Paragraph.Foreground = Brushes.White;
+            }
+            else
+            {
+                Paragraph.Foreground = Brushes.Black;
+            }
         }
 
         private void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
@@ -128,11 +144,27 @@ namespace LazyUp
         {
             int secsLast = Convert.ToInt32(durationBreakSec);
             SetTimerText(TimeLast, ref secsLast);
+            if (themeIsDark == "true")
+            {
+                TimeLast.Foreground = Brushes.White;
+            }
+            else
+            {
+                TimeLast.Foreground = Brushes.Black;
+            }
         }
 
         private void TimelineBar_Initialized(object sender, EventArgs e)
         {
             TimelineBar.Value = 100;
+            if (themeIsDark == "true")
+            {
+                TimelineBar.Foreground = Brushes.White;
+            }
+            else
+            {
+                TimelineBar.Foreground = Brushes.Black;
+            }
         }
 
         private void Window_Deactivated(object sender, EventArgs e)
@@ -147,6 +179,18 @@ namespace LazyUp
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = true;
+        }
+
+        private void Window_Initialized(object sender, EventArgs e)
+        {
+            if (themeIsDark == "true")
+            {
+                this.Background = Brushes.Black;
+            }
+            else
+            {
+                this.Background = Brushes.White;
+            }
         }
 
         private void Window_Activated(object sender, EventArgs e)
