@@ -23,15 +23,16 @@ namespace LazyUp
     /// </summary>
     public partial class MainWindow : Window
     {
-        string lockScreenHeader = ConfigurationManager.AppSettings["lockScreenHeader"];
-        string lockScreenParagraph = ConfigurationManager.AppSettings["lockScreenParagraph"];
-        string themeIsDark = ConfigurationManager.AppSettings["themeIsDark"];
-        string breaksIntervalSec = ConfigurationManager.AppSettings["breaksIntervalSec"];
-        string durationBreakSec = ConfigurationManager.AppSettings["durationBreakSec"];
-        string strictBreaks = ConfigurationManager.AppSettings["strictBreaks"];
-        string lookHiddenRest = ConfigurationManager.AppSettings["lookHiddenRest"];
-        string startupWithSystem = ConfigurationManager.AppSettings["startupWithSystem"];
-        string closeInTray = ConfigurationManager.AppSettings["closeInTray"];
+        string lockScreenHeader = ConfigurationManager.AppSettings["lockScreenHeader"] ?? "Go move";
+        string lockScreenParagraph = ConfigurationManager.AppSettings["lockScreenParagraph"] ?? "Regular activity makes you healthy and happy";
+        string themeIsDark = ConfigurationManager.AppSettings["themeIsDark"] ?? "true";
+        string breaksIntervalSec = ConfigurationManager.AppSettings["breaksIntervalSec"] ?? "3600";
+        string durationBreakSec = ConfigurationManager.AppSettings["durationBreakSec"] ?? "600";
+        string strictBreaks = ConfigurationManager.AppSettings["strictBreaks"] ?? "true";
+        string lookHiddenRest = ConfigurationManager.AppSettings["lookHiddenRest"] ?? "true";
+        string startupWithSystem = ConfigurationManager.AppSettings["startupWithSystem"] ??  "true";
+        string startInTray = ConfigurationManager.AppSettings["startInTray"] ?? "true";
+        string closeInTray = ConfigurationManager.AppSettings["closeInTray"] ?? "true";
 
         int breakIntervalHoursTemp;
         int breakIntervalMinutesTemp;
@@ -85,6 +86,7 @@ namespace LazyUp
             UpdateSetting("strictBreaks", strictBreaks);
             UpdateSetting("lookHiddenRest", lookHiddenRest);
             UpdateSetting("startupWithSystem", startupWithSystem);
+            UpdateSetting("startInTray", startInTray);
             UpdateSetting("closeInTray", closeInTray);
         }
 
@@ -211,6 +213,27 @@ namespace LazyUp
         {
             closeInTray = "false";
 
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = true;
+            Visibility = Visibility.Hidden;
+        }
+
+        private void StartInTrayCheckBox_Initialized(object sender, EventArgs e)
+        {
+            StartInTrayCheckBox.IsChecked = startInTray == "true";
+        }
+
+        private void StartInTrayCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            startInTray = "true";
+        }
+
+        private void StartInTrayCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            startInTray = "false";
         }
     }
 }

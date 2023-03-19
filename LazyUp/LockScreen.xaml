@@ -8,7 +8,7 @@
         Title="LockScreen" Height="450" Width="800"
         WindowState="Maximized"
         WindowStyle="None"
-        ResizeMode="NoResize"
+        ResizeMode="NoResize" Deactivated="Window_Deactivated" Activated="Window_Activated" Closing="Window_Closing"
         >
     <Grid>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">

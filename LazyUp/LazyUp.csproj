@@ -2,13 +2,26 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+	  <TargetFramework>net6.0-windows</TargetFramework>
+	  <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\close.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\logo.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\open.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
