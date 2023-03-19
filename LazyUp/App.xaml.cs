@@ -127,6 +127,20 @@ namespace LazyUp
             _notifyIcon.Dispose();
 
             // base.OnExit(e);
+            if (Enum.TryParse<ShutdownMode>(shutdownModeValue, out ShutdownMode shutdownMode))
+            {
+                Current.ShutdownMode = shutdownMode;
+            }
+            else
+            {
+                throw new Exception("Config error. No shutdownMode value with key closeInTray");
+            }
+
+            timerBreakInterval = new System.Timers.Timer();
+            timerBreakInterval.Interval = (Convert.ToInt32(breaksIntervalSec) + Convert.ToInt32(durationBreakSec)) * 1000;
+            timerBreakInterval.Elapsed += startBreak;
+            timerBreakInterval.AutoReset = true;
+            timerBreakInterval.Enabled = true;
         }
     }
 }
