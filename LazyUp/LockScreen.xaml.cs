@@ -14,6 +14,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Timers;
 using static System.Net.Mime.MediaTypeNames;
+using System.Runtime.InteropServices;
+using System.Reflection.Metadata;
+using System.Windows.Interop;
 
 namespace LazyUp
 {
@@ -22,11 +25,18 @@ namespace LazyUp
     /// </summary>
     public partial class LockScreen : Window
     {
-        string lockScreenHeader = ConfigurationManager.AppSettings["lockScreenHeader"];
-        string lockScreenParagraph = ConfigurationManager.AppSettings["lockScreenParagraph"];
-        string themeIsDark = ConfigurationManager.AppSettings["themeIsDark"];
-        string durationBreakSec = ConfigurationManager.AppSettings["durationBreakSec"];
-        string strictBreaks = ConfigurationManager.AppSettings["strictBreaks"];
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+        [DllImport("user32.dll")]
+        static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+        private const int GWL_EX_STYLE = -20;
+        private const int WS_EX_APPWINDOW = 0x00040000, WS_EX_TOOLWINDOW = 0x00000080;
+
+        string lockScreenHeader = ConfigurationManager.AppSettings["lockScreenHeader"] ?? "Go move";
+        string lockScreenParagraph = ConfigurationManager.AppSettings["lockScreenParagraph"] ?? "Regular activity makes you healthy and happy";
+        string themeIsDark = ConfigurationManager.AppSettings["themeIsDark"] ?? "true";
+        string durationBreakSec = ConfigurationManager.AppSettings["durationBreakSec"] ?? "600";
+        string strictBreaks = ConfigurationManager.AppSettings["strictBreaks"] ?? "true";
 
         private int breakSecsLast;
         private int timeIntervalSec;
@@ -48,11 +58,11 @@ namespace LazyUp
             {
                 text += Convert.ToString(minutes) + " minutes ";
             }
-            if (minutes > 0)
+            if (seconds > 0)
             {
                 text += Convert.ToString(seconds) + " seconds ";
             }
-            if (hours > 0 || minutes > 0)
+            if (hours > 0 || minutes > 0 || seconds > 0)
             {
                 text += "left";
             }
@@ -92,7 +102,8 @@ namespace LazyUp
 
         private void closeLockScreenOnTimeout(Object source, System.Timers.ElapsedEventArgs e)
         {
-            Close();
+            // isWindowClosable = false;
+            Dispatcher.BeginInvoke(() => { this.Close(); });
         }
 
         private void Header_Initialized(object sender, EventArgs e)
@@ -122,6 +133,30 @@ namespace LazyUp
         private void TimelineBar_Initialized(object sender, EventArgs e)
         {
             TimelineBar.Value = 100;
+        }
+
+        private void Window_Deactivated(object sender, EventArgs e)
+        {
+            Window window = (Window)sender;
+            window.Topmost = true;
+            var helper = new WindowInteropHelper(this).Handle;
+            SetWindowLong(helper, GWL_EX_STYLE, (GetWindowLong(helper, GWL_EX_STYLE) | WS_EX_TOOLWINDOW) & ~WS_EX_APPWINDOW);
+            window.Activate();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = true;
+        }
+
+        private void Window_Activated(object sender, EventArgs e)
+        {
+            this.Width = System.Windows.SystemParameters.PrimaryScreenWidth;
+            this.Height = System.Windows.SystemParameters.PrimaryScreenHeight;
+            this.Topmost = true;
+            this.Top = 0;
+            this.Left = 0;
+            this.ShowInTaskbar = false;
         }
     }
 }
