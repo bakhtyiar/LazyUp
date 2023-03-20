@@ -52,16 +52,23 @@
             <CheckBox x:Name="CloseInTrayCheckBox" Content="Close in tray" Margin="0 8 0 0" Checked="CloseInTrayCheckBox_Checked" Initialized="CloseInTrayCheckBox_Initialized" Unchecked="CloseInTrayCheckBox_Unchecked"/>
 
         </StackPanel>
-            <Grid Grid.Row="1" VerticalAlignment="Center">
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Grid.Row="0" x:Name="RunTestLockScreen" Content="Run test lock screen" HorizontalAlignment="Left" VerticalAlignment="Top" MinHeight="40" MinWidth="140" Click="RunTestLockScreen_Button_Click"/>
-                <Button Grid.Column="2" Grid.Row="0" DockPanel.Dock="Bottom" x:Name="SaveSettings" Content="Save settings" HorizontalAlignment="Right" VerticalAlignment="Top" MinHeight="40" MinWidth="140" Click="SaveSettings_Button_Click"/>
-            </Grid>
+        <Grid Grid.Row="1" VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Grid.Row="0" x:Name="RunTestLockScreen" Content="Run test lock" HorizontalAlignment="Left" VerticalAlignment="Top" MinHeight="40" MinWidth="140" Click="RunTestLockScreen_Button_Click" Background="White" BorderBrush="#FFE4E4E4"/>
+            <Button Grid.Column="2" Grid.Row="0" DockPanel.Dock="Bottom" x:Name="SaveSettings" Content="Save settings" HorizontalAlignment="Right" VerticalAlignment="Top" MinHeight="40" MinWidth="140" Click="SaveSettings_Button_Click" Foreground="#FFD8D8D8" BorderBrush="#FF353535">
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF250000"/>
+                        <GradientStop Color="#FF00123C" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+            </Button>
+        </Grid>
     </Grid>
 </Window>
