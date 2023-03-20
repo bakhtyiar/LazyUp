@@ -4,15 +4,14 @@
 
 ## Instruments
 - VisualStudio 2022  
-- .NET 5 & 6 (don't ask)
+- .NET 6
 - WPF & WinForms
 - C#, XAML
-- Builded by nuget 6
-- Linted html by htmlhint
+- Built by nuget 6
 
 ## How to try
 Open .exe in 
 ```
 ./LazyUp/bin/Release/
 ```
-Choose suitable for you version of build
+Choose suitable for you builds' version
