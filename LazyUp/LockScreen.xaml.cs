@@ -32,11 +32,11 @@ namespace LazyUp
         private const int GWL_EX_STYLE = -20;
         private const int WS_EX_APPWINDOW = 0x00040000, WS_EX_TOOLWINDOW = 0x00000080;
 
-        string lockScreenHeader = ConfigurationManager.AppSettings["lockScreenHeader"] ?? "Go move";
-        string lockScreenParagraph = ConfigurationManager.AppSettings["lockScreenParagraph"] ?? "Regular activity makes you healthy and happy";
-        string themeIsDark = ConfigurationManager.AppSettings["themeIsDark"] ?? "true";
-        string durationBreakSec = ConfigurationManager.AppSettings["durationBreakSec"] ?? "600";
-        string strictBreaks = ConfigurationManager.AppSettings["strictBreaks"] ?? "true";
+        string lockScreenHeader = ConfigurationManager.AppSettings["lockScreenHeader"] ?? "Stroll out";
+        string lockScreenParagraph = ConfigurationManager.AppSettings["lockScreenParagraph"] ?? "Regular activity makes you live longer";
+        bool themeIsDark = Convert.ToBoolean(ConfigurationManager.AppSettings["themeIsDark"]);
+        int durationBreakSec = Convert.ToInt32(ConfigurationManager.AppSettings["durationBreakSec"]);
+        bool strictBreaks = Convert.ToBoolean(ConfigurationManager.AppSettings["strictBreaks"]);
 
         private int breakSecsLast;
         private int timeIntervalSec;
@@ -82,7 +82,7 @@ namespace LazyUp
 
         public LockScreen()
         {
-            breakSecsLast = Convert.ToInt32(durationBreakSec);
+            breakSecsLast = durationBreakSec;
             timeIntervalSec = 1;
 
             timerIntervalForChanges = new System.Timers.Timer();
@@ -92,7 +92,7 @@ namespace LazyUp
             timerIntervalForChanges.Enabled = true;
 
             timerToClose = new System.Timers.Timer();
-            timerToClose.Interval = Convert.ToInt32(durationBreakSec) * 1000;
+            timerToClose.Interval = durationBreakSec * 1000;
             timerToClose.Elapsed += closeLockScreenOnTimeout;
             timerToClose.AutoReset = false;
             timerToClose.Enabled = true;
@@ -110,7 +110,7 @@ namespace LazyUp
         private void Header_Initialized(object sender, EventArgs e)
         {
             Header.Text = lockScreenHeader;
-            if (themeIsDark == "true")
+            if (themeIsDark)
             {
                 Header.Foreground = Brushes.White;
             } else
@@ -122,7 +122,7 @@ namespace LazyUp
         private void Paragraph_Initialized(object sender, EventArgs e)
         {
             Paragraph.Text = lockScreenParagraph;
-            if (themeIsDark == "true")
+            if (themeIsDark)
             {
                 Paragraph.Foreground = Brushes.White;
             }
@@ -136,15 +136,15 @@ namespace LazyUp
         {
             breakSecsLast -= timeIntervalSec;
             SetTimerText(TimeLast, ref breakSecsLast);
-            int lineLastPercentage = Convert.ToInt32((Convert.ToDouble(breakSecsLast) * 100 / Convert.ToDouble(durationBreakSec)));
+            int lineLastPercentage = breakSecsLast * 100 / durationBreakSec;
             SetTimelineBarValue(TimelineBar, lineLastPercentage);
         }
 
         private void TimeLast_Initialized(object sender, EventArgs e)
         {
-            int secsLast = Convert.ToInt32(durationBreakSec);
+            int secsLast = durationBreakSec;
             SetTimerText(TimeLast, ref secsLast);
-            if (themeIsDark == "true")
+            if (themeIsDark)
             {
                 TimeLast.Foreground = Brushes.White;
             }
@@ -157,7 +157,7 @@ namespace LazyUp
         private void TimelineBar_Initialized(object sender, EventArgs e)
         {
             TimelineBar.Value = 100;
-            if (themeIsDark == "true")
+            if (themeIsDark)
             {
                 TimelineBar.Foreground = Brushes.White;
             }
@@ -183,7 +183,7 @@ namespace LazyUp
 
         private void Window_Initialized(object sender, EventArgs e)
         {
-            if (themeIsDark == "true")
+            if (themeIsDark)
             {
                 this.Background = Brushes.Black;
             }

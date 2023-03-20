@@ -24,16 +24,16 @@ namespace LazyUp
     /// </summary>
     public partial class MainWindow : Window
     {
-        string lockScreenHeader = ConfigurationManager.AppSettings["lockScreenHeader"] ?? "Go move";
-        string lockScreenParagraph = ConfigurationManager.AppSettings["lockScreenParagraph"] ?? "Regular activity makes you healthy and happy";
-        string themeIsDark = ConfigurationManager.AppSettings["themeIsDark"] ?? "true";
-        string breaksIntervalSec = ConfigurationManager.AppSettings["breaksIntervalSec"] ?? "3600";
-        string durationBreakSec = ConfigurationManager.AppSettings["durationBreakSec"] ?? "600";
-        string strictBreaks = ConfigurationManager.AppSettings["strictBreaks"] ?? "true";
-        string lookHiddenRest = ConfigurationManager.AppSettings["lookHiddenRest"] ?? "true";
-        string startupWithSystem = ConfigurationManager.AppSettings["startupWithSystem"] ??  "true";
-        string startInTray = ConfigurationManager.AppSettings["startInTray"] ?? "true";
-        string closeInTray = ConfigurationManager.AppSettings["closeInTray"] ?? "true";
+        string lockScreenHeader = ConfigurationManager.AppSettings["lockScreenHeader"] ?? "Stroll out";
+        string lockScreenParagraph = ConfigurationManager.AppSettings["lockScreenParagraph"] ?? "Regular activity makes you live longer";
+        bool themeIsDark = Convert.ToBoolean(ConfigurationManager.AppSettings["themeIsDark"]);
+        int breaksIntervalSec = Convert.ToInt32(ConfigurationManager.AppSettings["breaksIntervalSec"]);
+        int durationBreakSec = Convert.ToInt32(ConfigurationManager.AppSettings["durationBreakSec"]);
+        bool strictBreaks = Convert.ToBoolean(ConfigurationManager.AppSettings["strictBreaks"]);
+        bool lookHiddenRest = Convert.ToBoolean(ConfigurationManager.AppSettings["lookHiddenRest"]);
+        bool startupWithSystem = Convert.ToBoolean(ConfigurationManager.AppSettings["startupWithSystem"]);
+        bool startInTray = Convert.ToBoolean(ConfigurationManager.AppSettings["startInTray"]);
+        bool closeInTray = Convert.ToBoolean(ConfigurationManager.AppSettings["closeInTray"]);
 
         int breakIntervalHoursTemp;
         int breakIntervalMinutesTemp;
@@ -64,11 +64,11 @@ namespace LazyUp
 
         public MainWindow()
         {
-            breakIntervalHoursTemp = Convert.ToInt32(breaksIntervalSec) / 60 / 60;
-            breakIntervalMinutesTemp = (Convert.ToInt32(breaksIntervalSec) / 60) - (Convert.ToInt32(breakIntervalHoursTemp) * 60);
+            breakIntervalHoursTemp = breaksIntervalSec / 60 / 60;
+            breakIntervalMinutesTemp = (breaksIntervalSec / 60) - (breakIntervalHoursTemp * 60);
 
-            breakDurationHoursTemp = Convert.ToInt32(breaksIntervalSec) / 60 / 60;
-            breakDurationMinutesTemp = (Convert.ToInt32(breaksIntervalSec) / 60) - (Convert.ToInt32(breakDurationHoursTemp) * 60);
+            breakDurationHoursTemp = breaksIntervalSec / 60 / 60;
+            breakDurationMinutesTemp = (breaksIntervalSec / 60) - (breakDurationHoursTemp * 60);
 
             InitializeComponent();
         }
@@ -83,14 +83,14 @@ namespace LazyUp
         {
             UpdateSetting("lockScreenHeader", lockScreenHeader);
             UpdateSetting("lockScreenParagraph", lockScreenParagraph);
-            UpdateSetting("themeIsDark", themeIsDark);
-            UpdateSetting("breaksIntervalSec", breaksIntervalSec);
-            UpdateSetting("durationBreakSec", durationBreakSec);
-            UpdateSetting("strictBreaks", strictBreaks);
-            UpdateSetting("lookHiddenRest", lookHiddenRest);
-            UpdateSetting("startupWithSystem", startupWithSystem);
-            UpdateSetting("startInTray", startInTray);
-            UpdateSetting("closeInTray", closeInTray);
+            UpdateSetting("themeIsDark", themeIsDark.ToString().ToLower());
+            UpdateSetting("breaksIntervalSec", breaksIntervalSec.ToString());
+            UpdateSetting("durationBreakSec", durationBreakSec.ToString());
+            UpdateSetting("strictBreaks", strictBreaks.ToString().ToLower());
+            UpdateSetting("lookHiddenRest", lookHiddenRest.ToString().ToLower());
+            UpdateSetting("startupWithSystem", startupWithSystem.ToString().ToLower());
+            UpdateSetting("startInTray", startInTray.ToString().ToLower());
+            UpdateSetting("closeInTray", closeInTray.ToString().ToLower());
         }
 
         private void LockScreenHeader_Initialized(object sender, EventArgs e)
@@ -115,27 +115,27 @@ namespace LazyUp
 
         private void radiobtnThemeDark_Initialized(object sender, EventArgs e)
         {
-            radiobtnThemeDark.IsChecked = themeIsDark == "true";
+            radiobtnThemeDark.IsChecked = themeIsDark;
         }
 
         private void radiobtnThemeDark_Checked(object sender, RoutedEventArgs e)
         {
-            themeIsDark = "true";
+            themeIsDark = true;
         }
 
         private void radiobtnThemeLight_Initialized(object sender, EventArgs e)
         {
-            radiobtnThemeLight.IsChecked = themeIsDark == "false";
+            radiobtnThemeLight.IsChecked = !themeIsDark;
         }
 
         private void radiobtnThemeLight_Checked(object sender, RoutedEventArgs e)
         {
-            themeIsDark = "false";
+            themeIsDark = false;
         }
 
         private void breaksIntervalHours_Initialized(object sender, EventArgs e)
         {
-            breakIntervalHoursTemp = Convert.ToInt32(breaksIntervalSec) / 60 / 60;
+            breakIntervalHoursTemp = breaksIntervalSec / 60 / 60;
             breaksIntervalHours.Text = Convert.ToString(breakIntervalHoursTemp);
         }
 
@@ -146,12 +146,12 @@ namespace LazyUp
 
         private void breaksIntervalHours_LostFocus(object sender, RoutedEventArgs e)
         {
-            breaksIntervalSec = Convert.ToString(breakIntervalHoursTemp * 60 * 60 + breakIntervalMinutesTemp * 60);
+            breaksIntervalSec = breakIntervalHoursTemp * 60 * 60 + breakIntervalMinutesTemp * 60;
         }
 
         private void breaksIntervalMinutes_Initialized(object sender, EventArgs e)
         {
-            breakIntervalMinutesTemp = Convert.ToInt32(breaksIntervalSec) / 60 - breakIntervalHoursTemp * 60;
+            breakIntervalMinutesTemp = breaksIntervalSec / 60 - breakIntervalHoursTemp * 60;
             breaksIntervalMinutes.Text = Convert.ToString(breakIntervalMinutesTemp);
         }
 
@@ -162,12 +162,12 @@ namespace LazyUp
 
         private void breaksIntervalMinutes_LostFocus(object sender, RoutedEventArgs e)
         {
-            breaksIntervalSec = Convert.ToString(breakIntervalHoursTemp * 60 * 60 + breakIntervalMinutesTemp * 60);
+            breaksIntervalSec = breakIntervalHoursTemp * 60 * 60 + breakIntervalMinutesTemp * 60;
         }
 
         private void durationBreakHours_Initialized(object sender, EventArgs e)
         {
-            breakDurationHoursTemp = Convert.ToInt32(durationBreakSec) / 60 / 60;
+            breakDurationHoursTemp = durationBreakSec / 60 / 60;
             durationBreakHours.Text = Convert.ToString(breakDurationHoursTemp);
         }
 
@@ -178,12 +178,12 @@ namespace LazyUp
 
         private void durationBreakHours_LostFocus(object sender, RoutedEventArgs e)
         {
-            durationBreakSec = Convert.ToString(breakDurationHoursTemp * 60 * 60 + breakDurationMinutesTemp * 60);
+            durationBreakSec = breakDurationHoursTemp * 60 * 60 + breakDurationMinutesTemp * 60;
         }
 
         private void durationBreakMinutes_Initialized(object sender, EventArgs e)
         {
-            breakDurationMinutesTemp = Convert.ToInt32(durationBreakSec) / 60 - breakDurationHoursTemp * 60;
+            breakDurationMinutesTemp = durationBreakSec / 60 - breakDurationHoursTemp * 60;
             durationBreakMinutes.Text = Convert.ToString(breakDurationMinutesTemp);
         }
 
@@ -194,37 +194,37 @@ namespace LazyUp
 
         private void durationBreakMinutes_LostFocus(object sender, RoutedEventArgs e)
         {
-            durationBreakSec = Convert.ToString(breakDurationHoursTemp * 60 * 60 + breakDurationMinutesTemp * 60);
+            durationBreakSec = breakDurationHoursTemp * 60 * 60 + breakDurationMinutesTemp * 60;
         }
 
         private void StartupWithSystemCheckBox_Initialized(object sender, EventArgs e)
         {
-            StartupWithSystemCheckBox.IsChecked = startupWithSystem == "true";
+            StartupWithSystemCheckBox.IsChecked = startupWithSystem;
         }
 
         private void StartupWithSystemCheckBox_Checked(object sender, RoutedEventArgs e)
         {
-           startupWithSystem = "true";
+           startupWithSystem = true;
         }
 
         private void StartupWithSystemCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            startupWithSystem = "false";
+            startupWithSystem = false;
         }
 
         private void CloseInTrayCheckBox_Initialized(object sender, EventArgs e)
         {
-            CloseInTrayCheckBox.IsChecked = startupWithSystem == "true";
+            CloseInTrayCheckBox.IsChecked = startupWithSystem;
         }
 
         private void CloseInTrayCheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            closeInTray = "true";
+            closeInTray = true;
         }
 
         private void CloseInTrayCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            closeInTray = "false";
+            closeInTray = false;
 
         }
 
@@ -236,17 +236,17 @@ namespace LazyUp
 
         private void StartInTrayCheckBox_Initialized(object sender, EventArgs e)
         {
-            StartInTrayCheckBox.IsChecked = startInTray == "true";
+            StartInTrayCheckBox.IsChecked = startInTray;
         }
 
         private void StartInTrayCheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            startInTray = "true";
+            startInTray = true;
         }
 
         private void StartInTrayCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            startInTray = "false";
+            startInTray = false;
         }
 
         private void Window_Initialized(object sender, EventArgs e)

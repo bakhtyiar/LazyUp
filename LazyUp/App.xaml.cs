@@ -18,11 +18,11 @@ namespace LazyUp
     /// </summary>
     public partial class App : Application
     {
-        string breaksIntervalSec = ConfigurationManager.AppSettings["breaksIntervalSec"] ?? "3600";
-        string durationBreakSec = ConfigurationManager.AppSettings["durationBreakSec"] ?? "600";
-        string startupWithSystem = ConfigurationManager.AppSettings["startupWithSystem"] ?? "true";
-        string startInTray = ConfigurationManager.AppSettings["startInTray"] ?? "true";
-        string closeInTray = ConfigurationManager.AppSettings["closeInTray"] ?? "true";
+        int breaksIntervalSec = Convert.ToInt32(ConfigurationManager.AppSettings["breaksIntervalSec"]);
+        int breaksDurationSec = Convert.ToInt32(ConfigurationManager.AppSettings["durationBreakSec"]);
+        bool startupWithSystem = Convert.ToBoolean(ConfigurationManager.AppSettings["startupWithSystem"]);
+        bool startInTray = Convert.ToBoolean(ConfigurationManager.AppSettings["startInTray"]);
+        bool closeInTray = Convert.ToBoolean(ConfigurationManager.AppSettings["closeInTray"]);
         string shutdownModeValue;
 
         private FileSystemWatcher _configWatcher;
@@ -38,7 +38,7 @@ namespace LazyUp
             _notifyIcon = new Forms.NotifyIcon();
             _notifyIcon.Icon = logoIcon;
 
-            shutdownModeValue = (closeInTray ?? "true") == "true" ? "OnExplicitShutdown" : "OnMainWindowClose";
+            shutdownModeValue = closeInTray ? "OnExplicitShutdown" : "OnMainWindowClose";
             if (Enum.TryParse<ShutdownMode>(shutdownModeValue, out ShutdownMode shutdownMode))
             {
                 Current.ShutdownMode = shutdownMode;
@@ -49,7 +49,7 @@ namespace LazyUp
             }
 
             timerBreakInterval = new System.Timers.Timer();
-            timerBreakInterval.Interval = (Convert.ToInt32(breaksIntervalSec) + Convert.ToInt32(durationBreakSec)) * 1000;
+            timerBreakInterval.Interval = (breaksIntervalSec + breaksDurationSec) * 1000;
             timerBreakInterval.Elapsed += startBreak;
             timerBreakInterval.AutoReset = true;
             timerBreakInterval.Enabled = true;
@@ -58,8 +58,8 @@ namespace LazyUp
         private void OnConfigChanged(object sender, FileSystemEventArgs e)
         {
             ConfigurationManager.RefreshSection("appSettings");
-            startupWithSystem = ConfigurationManager.AppSettings["startupWithSystem"] ?? "true";
-            if (startupWithSystem == "true")
+            startupWithSystem = Convert.ToBoolean(ConfigurationManager.AppSettings["startupWithSystem"]);
+            if (startupWithSystem)
             {
                 string path = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
                 RegistryKey key = Registry.CurrentUser.OpenSubKey(path, true);
@@ -101,7 +101,7 @@ namespace LazyUp
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            if(startInTray == "false")
+            if(!startInTray)
             {
                 this.StartupUri = new System.Uri("MainWindow.xaml", System.UriKind.Relative);
             }
