@@ -67,6 +67,22 @@ namespace LazyUp
 
             hideProgram = Convert.ToBoolean(ConfigurationManager.AppSettings["hideProgram"]);
             SetProgramVisibility(hideProgram);
+
+            closeInTray = Convert.ToBoolean(ConfigurationManager.AppSettings["closeInTray"]);
+            SetCloseInTray(closeInTray);
+        }
+
+        private void SetCloseInTray(bool isCloseInTray)
+        {
+            shutdownModeValue = isCloseInTray ? "OnExplicitShutdown" : "OnMainWindowClose";
+            if (Enum.TryParse<ShutdownMode>(shutdownModeValue, out ShutdownMode shutdownMode))
+            {
+                Current.ShutdownMode = shutdownMode;
+            }
+            else
+            {
+                throw new Exception("Config error. No shutdownMode value with key closeInTray");
+            }
         }
 
         private void SetProgramVisibility(bool isHiddenProgram)
@@ -139,6 +155,8 @@ namespace LazyUp
             }
 
             SetStartupProgram(startupWithSystem);
+
+            SetCloseInTray(closeInTray);
 
             string configFilePath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "App.config");
             _configWatcher = new FileSystemWatcher(Path.GetDirectoryName(configFilePath), Path.GetFileName(configFilePath));
