@@ -50,7 +50,7 @@
             <CheckBox x:Name="StartupWithSystemCheckBox" Content="Startup with system" Margin="0 8 0 0" Checked="StartupWithSystemCheckBox_Checked" Initialized="StartupWithSystemCheckBox_Initialized" Unchecked="StartupWithSystemCheckBox_Unchecked"/>
             <CheckBox x:Name="StartInTrayCheckBox" Content="Start in tray" Margin="0 8 0 0" Checked="StartInTrayCheckBox_Checked" Initialized="StartInTrayCheckBox_Initialized" Unchecked="StartInTrayCheckBox_Unchecked"/>
             <CheckBox x:Name="CloseInTrayCheckBox" Content="Close in tray" Margin="0 8 0 0" Checked="CloseInTrayCheckBox_Checked" Initialized="CloseInTrayCheckBox_Initialized" Unchecked="CloseInTrayCheckBox_Unchecked"/>
-            <CheckBox x:Name="HideProgramCheckBox" Content="Hide program" Margin="0 8 0 0" Checked="HideProgramCheckBox_Checked" Initialized="HideProgramCheckBox_Initialized" Unchecked="HideProgramCheckBox_Unchecked"/>
+            <CheckBox x:Name="HideProgramCheckBox" Content="Hide program (requires restart)" Margin="0 8 0 0" Checked="HideProgramCheckBox_Checked" Initialized="HideProgramCheckBox_Initialized" Unchecked="HideProgramCheckBox_Unchecked"/>
 
         </StackPanel>
         <Grid Grid.Row="1" VerticalAlignment="Center">

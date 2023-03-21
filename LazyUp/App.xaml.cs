@@ -147,12 +147,12 @@ namespace LazyUp
             _configWatcher.Changed += OnConfigChanged;
             _configWatcher.EnableRaisingEvents = true;
 
-            SetProgramVisibility(hideProgram);
             _notifyIcon.Text = "LazyUp";
             _notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
             _notifyIcon.ContextMenuStrip = new Forms.ContextMenuStrip();
             _notifyIcon.ContextMenuStrip.Items.Add("Open", openIcon.ToBitmap(), NotifyIconOnClickedOpen);
             _notifyIcon.ContextMenuStrip.Items.Add("Close", closeIcon.ToBitmap(), NotifyIconOnClickedClose);
+            SetProgramVisibility(hideProgram);
 
             // base.OnStartup(e);
         }

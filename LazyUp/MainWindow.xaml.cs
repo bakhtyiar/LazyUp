@@ -268,15 +268,7 @@ namespace LazyUp
 
         private void HideProgramCheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Program will be hard to close & problematic undo the option", "Are you sure?", System.Windows.MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (messageBoxResult == MessageBoxResult.Yes)
-            {
-                hideProgram = true;
-            } else
-            {
-                hideProgram = false;
-                HideProgramCheckBox.IsChecked = false;
-            }
+            hideProgram = true;
         }
 
         private void HideProgramCheckBox_Unchecked(object sender, RoutedEventArgs e)
