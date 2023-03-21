@@ -16,6 +16,7 @@ using System.Configuration;
 using System.Reflection;
 using System.Drawing;
 using System.Windows.Interop;
+using System.Runtime.InteropServices;
 
 namespace LazyUp
 {
@@ -34,6 +35,7 @@ namespace LazyUp
         bool startupWithSystem = Convert.ToBoolean(ConfigurationManager.AppSettings["startupWithSystem"]);
         bool startInTray = Convert.ToBoolean(ConfigurationManager.AppSettings["startInTray"]);
         bool closeInTray = Convert.ToBoolean(ConfigurationManager.AppSettings["closeInTray"]);
+        bool hideProgram = Convert.ToBoolean(ConfigurationManager.AppSettings["hideProgram"]);
 
         int breakIntervalHoursTemp;
         int breakIntervalMinutesTemp;
@@ -44,7 +46,6 @@ namespace LazyUp
         private System.Drawing.Icon logoIcon = new System.Drawing.Icon("Resources/logo.ico");
 
         // public static string BaseDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-
 
         private string getValueTextBox(object sender)
         {
@@ -91,6 +92,7 @@ namespace LazyUp
             UpdateSetting("startupWithSystem", startupWithSystem.ToString().ToLower());
             UpdateSetting("startInTray", startInTray.ToString().ToLower());
             UpdateSetting("closeInTray", closeInTray.ToString().ToLower());
+            UpdateSetting("hideProgram", hideProgram.ToString().ToLower());
         }
 
         private void LockScreenHeader_Initialized(object sender, EventArgs e)
@@ -255,6 +257,29 @@ namespace LazyUp
             logoIcon.Handle,
             Int32Rect.Empty,
             BitmapSizeOptions.FromEmptyOptions()); ;
+        }
+
+        private void HideProgramCheckBox_Initialized(object sender, EventArgs e)
+        {
+            HideProgramCheckBox.IsChecked = hideProgram;
+        }
+
+        private void HideProgramCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Program will be hard to close & problematic undo the option", "Are you sure?", System.Windows.MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (messageBoxResult == MessageBoxResult.Yes)
+            {
+                hideProgram = true;
+            } else
+            {
+                hideProgram = false;
+                HideProgramCheckBox.IsChecked = false;
+            }
+        }
+
+        private void HideProgramCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            hideProgram = false;
         }
     }
 }

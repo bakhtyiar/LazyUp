@@ -10,28 +10,48 @@ using System.Timers;
 using System.IO;
 using System.Reflection;
 using Microsoft.Win32;
+using System.Windows.Forms;
+using System.Runtime.InteropServices;
+using System.Windows.Interop;
 
 namespace LazyUp
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App : System.Windows.Application
     {
         int breaksIntervalSec = Convert.ToInt32(ConfigurationManager.AppSettings["breaksIntervalSec"]);
         int breaksDurationSec = Convert.ToInt32(ConfigurationManager.AppSettings["durationBreakSec"]);
         bool startupWithSystem = Convert.ToBoolean(ConfigurationManager.AppSettings["startupWithSystem"]);
         bool startInTray = Convert.ToBoolean(ConfigurationManager.AppSettings["startInTray"]);
         bool closeInTray = Convert.ToBoolean(ConfigurationManager.AppSettings["closeInTray"]);
+        bool hideProgram = Convert.ToBoolean(ConfigurationManager.AppSettings["hideProgram"]);
         string shutdownModeValue;
 
         private FileSystemWatcher _configWatcher;
-        private Timer timerBreakInterval;
+        private System.Timers.Timer timerBreakInterval;
         private MainWindow mainWindow = new MainWindow();
         private Forms.NotifyIcon _notifyIcon;
         private System.Drawing.Icon logoIcon = new System.Drawing.Icon("Resources/logo.ico");
         private System.Drawing.Icon openIcon = new System.Drawing.Icon("Resources/open.ico");
         private System.Drawing.Icon closeIcon = new System.Drawing.Icon("Resources/close.ico");
+
+        private const int GWL_EXSTYLE = -20;
+        private const int WS_EX_TOOLWINDOW = 0x00000080;
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+
+        private void HideFromTaskManager(Window window)
+        {
+            var hwnd = new WindowInteropHelper(window).Handle;
+            var exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+            SetWindowLong(hwnd, GWL_EXSTYLE, new IntPtr((int)exStyle | WS_EX_TOOLWINDOW));
+        }
 
         App()
         {
@@ -58,19 +78,39 @@ namespace LazyUp
         private void OnConfigChanged(object sender, FileSystemEventArgs e)
         {
             ConfigurationManager.RefreshSection("appSettings");
+
             startupWithSystem = Convert.ToBoolean(ConfigurationManager.AppSettings["startupWithSystem"]);
-            if (startupWithSystem)
+            SetStartupProgram(startInTray);
+
+            hideProgram = Convert.ToBoolean(ConfigurationManager.AppSettings["hideProgram"]);
+            SetProgramVisibility(hideProgram);
+        }
+
+        private void SetProgramVisibility(bool isHiddenProgram)
+        {
+            if (isHiddenProgram)
+            {
+                _notifyIcon.Visible = false;
+                HideFromTaskManager(mainWindow);
+            } else
+            {
+                _notifyIcon.Visible = true;
+            }
+        }
+
+        private void SetStartupProgram(bool isStartup) {
+            if (isStartup)
             {
                 string path = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
                 RegistryKey key = Registry.CurrentUser.OpenSubKey(path, true);
                 key.SetValue("LazyUp", System.Reflection.Assembly.GetExecutingAssembly().Location.ToString());
-            } else
+            }
+            else
             {
                 string path = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
                 RegistryKey key = Registry.CurrentUser.OpenSubKey(path, true);
                 key.DeleteValue("LazyUp", false);
             }
-
         }
 
         private void NotifyIcon_DoubleClick(object sender, EventArgs e)
@@ -83,7 +123,7 @@ namespace LazyUp
 
         private void startBreak(Object source, System.Timers.ElapsedEventArgs e)
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 LockScreen lockWindow = new LockScreen();
                 lockWindow.Show();
@@ -106,13 +146,15 @@ namespace LazyUp
                 this.StartupUri = new System.Uri("MainWindow.xaml", System.UriKind.Relative);
             }
 
+            SetStartupProgram(startupWithSystem);
+
             string configFilePath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "App.config");
             _configWatcher = new FileSystemWatcher(Path.GetDirectoryName(configFilePath), Path.GetFileName(configFilePath));
             _configWatcher.NotifyFilter = NotifyFilters.LastWrite;
             _configWatcher.Changed += OnConfigChanged;
             _configWatcher.EnableRaisingEvents = true;
 
-            _notifyIcon.Visible = true;
+            SetProgramVisibility(hideProgram);
             _notifyIcon.Text = "LazyUp";
             _notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
             _notifyIcon.ContextMenuStrip = new Forms.ContextMenuStrip();
