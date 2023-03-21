@@ -1,5 +1,9 @@
 # LazyUp
-## Makes you move
+**Makes you move.**
+## About
+Strict program, does not allow you to just close the break window and self, unlike analogues.
+Open-source code base.
+
 ![preview image](./github_preview.png)
 
 ## Instruments
