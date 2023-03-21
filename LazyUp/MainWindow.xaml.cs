@@ -216,7 +216,7 @@ namespace LazyUp
 
         private void CloseInTrayCheckBox_Initialized(object sender, EventArgs e)
         {
-            CloseInTrayCheckBox.IsChecked = startupWithSystem;
+            CloseInTrayCheckBox.IsChecked = closeInTray;
         }
 
         private void CloseInTrayCheckBox_Checked(object sender, RoutedEventArgs e)
@@ -232,8 +232,10 @@ namespace LazyUp
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            e.Cancel = true;
-            Visibility = Visibility.Hidden;
+            if(closeInTray) { 
+                e.Cancel = true;
+                Visibility = Visibility.Hidden;
+            }
         }
 
         private void StartInTrayCheckBox_Initialized(object sender, EventArgs e)
