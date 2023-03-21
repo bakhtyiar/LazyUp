@@ -47,7 +47,7 @@ namespace LazyUp
             ConfigurationManager.RefreshSection("appSettings");
 
             startupWithSystem = Convert.ToBoolean(ConfigurationManager.AppSettings["startupWithSystem"]);
-            SetStartupProgram(startInTray);
+            SetStartupProgram(startupWithSystem);
 
             hideProgram = Convert.ToBoolean(ConfigurationManager.AppSettings["hideProgram"]);
             SetProgramVisibility(hideProgram);
@@ -85,7 +85,7 @@ namespace LazyUp
             {
                 string path = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
                 RegistryKey key = Registry.CurrentUser.OpenSubKey(path, true);
-                key.SetValue("LazyUp", System.Reflection.Assembly.GetExecutingAssembly().Location.ToString());
+                key.SetValue("LazyUp", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString() + "\\LazyUp.exe");
             }
             else
             {
