@@ -159,7 +159,9 @@ namespace LazyUp
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
+            _notifyIcon.Visible = false;
             _notifyIcon.Dispose();
+            _notifyIcon = null;
 
             // base.OnExit(e);
         }
