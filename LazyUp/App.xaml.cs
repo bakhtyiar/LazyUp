@@ -55,24 +55,7 @@ namespace LazyUp
 
         App()
         {
-            _notifyIcon = new Forms.NotifyIcon();
-            _notifyIcon.Icon = logoIcon;
-
-            shutdownModeValue = closeInTray ? "OnExplicitShutdown" : "OnMainWindowClose";
-            if (Enum.TryParse<ShutdownMode>(shutdownModeValue, out ShutdownMode shutdownMode))
-            {
-                Current.ShutdownMode = shutdownMode;
-            }
-            else
-            {
-                throw new Exception("Config error. No shutdownMode value with key closeInTray");
-            }
-
-            timerBreakInterval = new System.Timers.Timer();
-            timerBreakInterval.Interval = (breaksIntervalSec + breaksDurationSec) * 1000;
-            timerBreakInterval.Elapsed += startBreak;
-            timerBreakInterval.AutoReset = true;
-            timerBreakInterval.Enabled = true;
+            
         }
 
         private void OnConfigChanged(object sender, FileSystemEventArgs e)
@@ -141,7 +124,16 @@ namespace LazyUp
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            if(!startInTray)
+            _notifyIcon = new Forms.NotifyIcon();
+            _notifyIcon.Icon = logoIcon;
+
+            timerBreakInterval = new System.Timers.Timer();
+            timerBreakInterval.Interval = (breaksIntervalSec + breaksDurationSec) * 1000;
+            timerBreakInterval.Elapsed += startBreak;
+            timerBreakInterval.AutoReset = true;
+            timerBreakInterval.Enabled = true;
+
+            if (!startInTray)
             {
                 this.StartupUri = new System.Uri("MainWindow.xaml", System.UriKind.Relative);
             }
