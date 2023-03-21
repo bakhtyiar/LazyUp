@@ -37,22 +37,6 @@ namespace LazyUp
         private System.Drawing.Icon openIcon = new System.Drawing.Icon("Resources/open.ico");
         private System.Drawing.Icon closeIcon = new System.Drawing.Icon("Resources/close.ico");
 
-        private const int GWL_EXSTYLE = -20;
-        private const int WS_EX_TOOLWINDOW = 0x00000080;
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr GetWindowLong(IntPtr hWnd, int nIndex);
-
-        [DllImport("user32.dll")]
-        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
-
-        private void HideFromTaskManager(Window window)
-        {
-            var hwnd = new WindowInteropHelper(window).Handle;
-            var exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
-            SetWindowLong(hwnd, GWL_EXSTYLE, new IntPtr((int)exStyle | WS_EX_TOOLWINDOW));
-        }
-
         App()
         {
             
@@ -90,7 +74,6 @@ namespace LazyUp
             if (isHiddenProgram)
             {
                 _notifyIcon.Visible = false;
-                HideFromTaskManager(mainWindow);
             } else
             {
                 _notifyIcon.Visible = true;
