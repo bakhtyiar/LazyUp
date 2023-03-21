@@ -134,7 +134,11 @@ namespace LazyUp
 
             if (!startInTray)
             {
-                this.StartupUri = new System.Uri("MainWindow.xaml", System.UriKind.Relative);
+                //this.StartupUri = new System.Uri("MainWindow.xaml", System.UriKind.Relative);
+                mainWindow = mainWindow ?? new MainWindow();
+                mainWindow.WindowState = WindowState.Normal;
+                mainWindow.Show();
+                mainWindow.Activate();
             }
 
             SetStartupProgram(startupWithSystem);
