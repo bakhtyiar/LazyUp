@@ -13,6 +13,7 @@ using Microsoft.Win32;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
+using IWshRuntimeLibrary;
 
 namespace LazyUp
 {
@@ -33,9 +34,13 @@ namespace LazyUp
         private System.Timers.Timer timerBreakInterval;
         private MainWindow mainWindow = new MainWindow();
         private Forms.NotifyIcon _notifyIcon;
-        private System.Drawing.Icon logoIcon = new System.Drawing.Icon("Resources/logo.ico");
-        private System.Drawing.Icon openIcon = new System.Drawing.Icon("Resources/open.ico");
-        private System.Drawing.Icon closeIcon = new System.Drawing.Icon("Resources/close.ico");
+        private System.Drawing.Icon logoIcon = new System.Drawing.Icon(@"Resources\logo.ico");
+        private System.Drawing.Icon openIcon = new System.Drawing.Icon(@"Resources\open.ico");
+        private System.Drawing.Icon closeIcon = new System.Drawing.Icon(@"Resources\close.ico");
+        private string execDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString();
+        private string startupFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
+        private string programBrandName = "LazyUp";
+        private string programPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString() + @"\LazyUp.exe";
 
         App()
         {
@@ -81,17 +86,31 @@ namespace LazyUp
         }
 
         private void SetStartupProgram(bool isStartup) {
+            string path = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
             if (isStartup)
             {
-                string path = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
                 RegistryKey key = Registry.CurrentUser.OpenSubKey(path, true);
-                key.SetValue("LazyUp", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString() + "\\LazyUp.exe");
+                key.SetValue(programBrandName, programPath);
+
+                WshShell shell = new WshShell();
+                IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(Path.Combine(startupFolderPath, programBrandName + ".lnk"));
+
+                shortcut.TargetPath = programPath;
+                shortcut.WorkingDirectory = Path.GetDirectoryName(programPath);
+                shortcut.Description = programBrandName;
+                shortcut.IconLocation = Path.Combine(execDirectory, @"Resources\logo.ico");
+                shortcut.Save();
             }
             else
             {
-                string path = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
                 RegistryKey key = Registry.CurrentUser.OpenSubKey(path, true);
-                key.DeleteValue("LazyUp", false);
+                key.DeleteValue(programBrandName, false);
+
+                string shortcutPath = Path.Combine(startupFolderPath, programBrandName + ".lnk");
+                if (System.IO.File.Exists(shortcutPath))
+                {
+                    System.IO.File.Delete(shortcutPath);
+                }
             }
         }
 
@@ -151,7 +170,7 @@ namespace LazyUp
             _configWatcher.Changed += OnConfigChanged;
             _configWatcher.EnableRaisingEvents = true;
 
-            _notifyIcon.Text = "LazyUp";
+            _notifyIcon.Text = programBrandName;
             _notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
             _notifyIcon.ContextMenuStrip = new Forms.ContextMenuStrip();
             _notifyIcon.ContextMenuStrip.Items.Add("Open", openIcon.ToBitmap(), NotifyIconOnClickedOpen);
