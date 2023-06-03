@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using IWshRuntimeLibrary;
+using System.Diagnostics;
 
 namespace LazyUp
 {
@@ -22,6 +23,8 @@ namespace LazyUp
     /// </summary>
     public partial class App : System.Windows.Application
     {
+        Process process = new Process();
+
         private AppConfigurator configurator = AppConfigurator.GetInstance();
         private AppSettings config = AppConfigurator.GetInstance().config;
         string shutdownModeValue;
@@ -40,6 +43,17 @@ namespace LazyUp
 
         App()
         {
+        }
+        
+        System.Threading.Timer timer = new System.Threading.Timer(TimerElapse, null, 0, 5000);
+        static void TimerElapse(object? state)
+        {
+            Process[] processes = Process.GetProcessesByName("AgentOfLazyUp");
+            if (processes.Length == 0)
+            {
+                string exePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString() + @"\AgentOfLazyUp.exe";
+                Process.Start(exePath);
+            }
         }
 
         private void OnConfigChanged(object sender, FileSystemEventArgs e)
