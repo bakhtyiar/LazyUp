@@ -25,6 +25,7 @@ namespace LazyUp
     /// </summary>
     public partial class LockScreen : Window
     {
+        //Hack code for removing opportunity to close opened LockScreen.xaml window
         [DllImport("user32.dll", SetLastError = true)]
         static extern int GetWindowLong(IntPtr hWnd, int nIndex);
         [DllImport("user32.dll")]
@@ -32,11 +33,7 @@ namespace LazyUp
         private const int GWL_EX_STYLE = -20;
         private const int WS_EX_APPWINDOW = 0x00040000, WS_EX_TOOLWINDOW = 0x00000080;
 
-        string lockScreenHeader = ConfigurationManager.AppSettings["lockScreenHeader"] ?? "Stroll out";
-        string lockScreenParagraph = ConfigurationManager.AppSettings["lockScreenParagraph"] ?? "Regular activity makes you live longer";
-        bool themeIsDark = Convert.ToBoolean(ConfigurationManager.AppSettings["themeIsDark"]);
-        int durationBreakSec = Convert.ToInt32(ConfigurationManager.AppSettings["durationBreakSec"]);
-        bool strictBreaks = Convert.ToBoolean(ConfigurationManager.AppSettings["strictBreaks"]);
+        private AppSettings config = AppConfigurator.GetInstance().config;
 
         private int breakSecsLast;
         private int timeIntervalSec;
@@ -82,7 +79,7 @@ namespace LazyUp
 
         public LockScreen()
         {
-            breakSecsLast = durationBreakSec;
+            breakSecsLast = config.DurationBreakSec;
             timeIntervalSec = 1;
 
             timerIntervalForChanges = new System.Timers.Timer();
@@ -92,7 +89,7 @@ namespace LazyUp
             timerIntervalForChanges.Enabled = true;
 
             timerToClose = new System.Timers.Timer();
-            timerToClose.Interval = durationBreakSec * 1000;
+            timerToClose.Interval = config.DurationBreakSec * 1000;
             timerToClose.Elapsed += closeLockScreenOnTimeout;
             timerToClose.AutoReset = false;
             timerToClose.Enabled = true;
@@ -109,8 +106,8 @@ namespace LazyUp
 
         private void Header_Initialized(object sender, EventArgs e)
         {
-            Header.Text = lockScreenHeader;
-            if (themeIsDark)
+            Header.Text = config.LockScreenHeader;
+            if (config.ThemeIsDark)
             {
                 Header.Foreground = Brushes.White;
             } else
@@ -121,8 +118,8 @@ namespace LazyUp
 
         private void Paragraph_Initialized(object sender, EventArgs e)
         {
-            Paragraph.Text = lockScreenParagraph;
-            if (themeIsDark)
+            Paragraph.Text = config.LockScreenParagraph;
+            if (config.ThemeIsDark)
             {
                 Paragraph.Foreground = Brushes.White;
             }
@@ -136,15 +133,15 @@ namespace LazyUp
         {
             breakSecsLast -= timeIntervalSec;
             SetTimerText(TimeLast, ref breakSecsLast);
-            int lineLastPercentage = breakSecsLast * 100 / durationBreakSec;
+            int lineLastPercentage = breakSecsLast * 100 / config.DurationBreakSec;
             SetTimelineBarValue(TimelineBar, lineLastPercentage);
         }
 
         private void TimeLast_Initialized(object sender, EventArgs e)
         {
-            int secsLast = durationBreakSec;
+            int secsLast = config.DurationBreakSec;
             SetTimerText(TimeLast, ref secsLast);
-            if (themeIsDark)
+            if (config.ThemeIsDark)
             {
                 TimeLast.Foreground = Brushes.White;
             }
@@ -157,7 +154,7 @@ namespace LazyUp
         private void TimelineBar_Initialized(object sender, EventArgs e)
         {
             TimelineBar.Value = 100;
-            if (themeIsDark)
+            if (config.ThemeIsDark)
             {
                 TimelineBar.Foreground = Brushes.White;
             }
@@ -183,7 +180,7 @@ namespace LazyUp
 
         private void Window_Initialized(object sender, EventArgs e)
         {
-            if (themeIsDark)
+            if (config.ThemeIsDark)
             {
                 this.Background = Brushes.Black;
             }

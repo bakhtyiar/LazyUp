@@ -22,12 +22,8 @@ namespace LazyUp
     /// </summary>
     public partial class App : System.Windows.Application
     {
-        int breaksIntervalSec = Convert.ToInt32(ConfigurationManager.AppSettings["breaksIntervalSec"]);
-        int breaksDurationSec = Convert.ToInt32(ConfigurationManager.AppSettings["durationBreakSec"]);
-        bool startupWithSystem = Convert.ToBoolean(ConfigurationManager.AppSettings["startupWithSystem"]);
-        bool startInTray = Convert.ToBoolean(ConfigurationManager.AppSettings["startInTray"]);
-        bool closeInTray = Convert.ToBoolean(ConfigurationManager.AppSettings["closeInTray"]);
-        bool hideProgram = Convert.ToBoolean(ConfigurationManager.AppSettings["hideProgram"]);
+        private AppConfigurator configurator = AppConfigurator.GetInstance();
+        private AppSettings config = AppConfigurator.GetInstance().config;
         string shutdownModeValue;
 
         private FileSystemWatcher _configWatcher;
@@ -44,21 +40,14 @@ namespace LazyUp
 
         App()
         {
-            
         }
 
         private void OnConfigChanged(object sender, FileSystemEventArgs e)
         {
-            ConfigurationManager.RefreshSection("appSettings");
-
-            startupWithSystem = Convert.ToBoolean(ConfigurationManager.AppSettings["startupWithSystem"]);
-            SetStartupProgram(startupWithSystem);
-
-            hideProgram = Convert.ToBoolean(ConfigurationManager.AppSettings["hideProgram"]);
-            SetProgramVisibility(hideProgram);
-
-            closeInTray = Convert.ToBoolean(ConfigurationManager.AppSettings["closeInTray"]);
-            SetCloseInTray(closeInTray);
+            configurator.RefreshConfig();
+            SetStartupProgram(config.StartupWithSystem);
+            SetProgramVisibility(config.HideProgram);
+            SetCloseInTray(config.CloseInTray);
         }
 
         private void SetCloseInTray(bool isCloseInTray)
@@ -146,23 +135,22 @@ namespace LazyUp
             _notifyIcon.Icon = logoIcon;
 
             timerBreakInterval = new System.Timers.Timer();
-            timerBreakInterval.Interval = (breaksIntervalSec + breaksDurationSec) * 1000;
+            timerBreakInterval.Interval = (config.BreaksIntervalSec + config.DurationBreakSec) * 1000;
             timerBreakInterval.Elapsed += startBreak;
             timerBreakInterval.AutoReset = true;
             timerBreakInterval.Enabled = true;
 
-            if (!startInTray)
+            if (!config.StartInTray)
             {
-                //this.StartupUri = new System.Uri("MainWindow.xaml", System.UriKind.Relative);
                 mainWindow = mainWindow ?? new MainWindow();
                 mainWindow.WindowState = WindowState.Normal;
                 mainWindow.Show();
                 mainWindow.Activate();
             }
 
-            SetStartupProgram(startupWithSystem);
+            SetStartupProgram(config.StartupWithSystem);
 
-            SetCloseInTray(closeInTray);
+            SetCloseInTray(config.CloseInTray);
 
             string configFilePath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "App.config");
             _configWatcher = new FileSystemWatcher(Path.GetDirectoryName(configFilePath), Path.GetFileName(configFilePath));
@@ -175,9 +163,7 @@ namespace LazyUp
             _notifyIcon.ContextMenuStrip = new Forms.ContextMenuStrip();
             _notifyIcon.ContextMenuStrip.Items.Add("Open", openIcon.ToBitmap(), NotifyIconOnClickedOpen);
             _notifyIcon.ContextMenuStrip.Items.Add("Close", closeIcon.ToBitmap(), NotifyIconOnClickedClose);
-            SetProgramVisibility(hideProgram);
-
-            // base.OnStartup(e);
+            SetProgramVisibility(config.HideProgram);
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)
@@ -185,8 +171,6 @@ namespace LazyUp
             _notifyIcon.Visible = false;
             _notifyIcon.Dispose();
             _notifyIcon = null;
-
-            // base.OnExit(e);
         }
     }
 }
