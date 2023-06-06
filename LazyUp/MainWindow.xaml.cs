@@ -248,5 +248,20 @@ namespace LazyUp
         {
             config.HideProgram = false;
         }
+
+        private void ReviveProgramCheckBox_Initialized(object sender, EventArgs e)
+        {
+            ReviveProgramCheckBox.IsChecked = config.ReviveProgram;
+        }
+
+        private void ReviveProgramCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            config.ReviveProgram = true;
+        }
+
+        private void ReviveProgramCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            config.ReviveProgram = false;
+        }
     }
 }

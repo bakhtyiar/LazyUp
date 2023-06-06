@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LazyUp"
         mc:Ignorable="d"
-        Title="LazyUp" Height="470" Width="350"
+        Title="LazyUp" Height="500" Width="350"
                 xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" Closing="Window_Closing" Initialized="Window_Initialized"
 
         >
@@ -17,10 +17,10 @@
         <StackPanel HorizontalAlignment="Left">
             <TextBlock TextWrapping="Wrap" Text="Settings" FontSize="16" FontWeight="Bold"/>
             <TextBlock TextWrapping="Wrap" Text="Header text to lock screen" FontWeight="Bold" Margin="0 8 0 0"/>
-            <TextBox x:Name="LockScreenHeader" TextWrapping="Wrap" Width="240" Margin="0 4 0 0" TextChanged="LockScreenHeaderText_TextChanged" Initialized="LockScreenHeader_Initialized"/>
+            <TextBox x:Name="LockScreenHeader" TextWrapping="Wrap" Width="240" Margin="0 4 0 0" TextChanged="LockScreenHeaderText_TextChanged" Initialized="LockScreenHeader_Initialized" HorizontalAlignment="Left" Height="20"/>
             <TextBlock TextWrapping="Wrap" Text="Paragraph text to lock screen" FontWeight="Bold" Margin="0 8 0 0"/>
-            <TextBox x:Name="LockScreenParagraph" TextWrapping="Wrap" Width="240" Margin="0 4 0 0" TextChanged="LockScreenParagraph_TextChanged" Initialized="LockScreenParagraph_Initialized"/>
-            <TextBlock TextWrapping="Wrap" Text="Theme" FontWeight="Bold" Margin="0 8 0 0"/>
+            <TextBox x:Name="LockScreenParagraph" TextWrapping="Wrap" Width="240" Margin="0 4 0 0" TextChanged="LockScreenParagraph_TextChanged" Initialized="LockScreenParagraph_Initialized" HorizontalAlignment="Left" Height="20"/>
+            <TextBlock TextWrapping="Wrap" Text="Lock screen theme" FontWeight="Bold" Margin="0 8 0 0"/>
             <StackPanel Orientation="Horizontal" Margin="0 4 0 0">
                 <RadioButton x:Name="radiobtnThemeLight" GroupName="visualTheme" Content="Light" Margin="0 0 8 0" Checked="radiobtnThemeLight_Checked" Initialized="radiobtnThemeLight_Initialized"/>
                 <RadioButton x:Name="radiobtnThemeDark" GroupName="visualTheme" Content="Dark" Checked="radiobtnThemeDark_Checked" Initialized="radiobtnThemeDark_Initialized" />
@@ -51,6 +51,9 @@
             <CheckBox x:Name="CloseInTrayCheckBox" Content="Close in tray" Margin="0 8 0 0" Checked="CloseInTrayCheckBox_Checked" Initialized="CloseInTrayCheckBox_Initialized" Unchecked="CloseInTrayCheckBox_Unchecked"/>
             <CheckBox x:Name="StartupWithSystemCheckBox" Content="Startup with system (requires restart)" Margin="0 8 0 0" Checked="StartupWithSystemCheckBox_Checked" Initialized="StartupWithSystemCheckBox_Initialized" Unchecked="StartupWithSystemCheckBox_Unchecked"/>
             <CheckBox x:Name="HideProgramCheckBox" Content="Hide program (requires restart)" Margin="0 8 0 0" Checked="HideProgramCheckBox_Checked" Initialized="HideProgramCheckBox_Initialized" Unchecked="HideProgramCheckBox_Unchecked"/>
+            <CheckBox x:Name="ReviveProgramCheckBox" Margin="0 8 0 0" Checked="ReviveProgramCheckBox_Checked" Initialized="ReviveProgramCheckBox_Initialized" Unchecked="ReviveProgramCheckBox_Unchecked" Width="333" Height="30">
+                <TextBlock Text="Revive program (requires restart)" TextWrapping="Wrap" Width="219"/>
+            </CheckBox>
 
         </StackPanel>
         <Grid Grid.Row="1" VerticalAlignment="Center">
@@ -58,18 +61,11 @@
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="30*"></ColumnDefinition>
+                <ColumnDefinition Width="70*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Grid.Row="0" x:Name="RunTestLockScreen" Content="Run test lock" HorizontalAlignment="Left" VerticalAlignment="Top" MinHeight="40" MinWidth="140" Click="RunTestLockScreen_Button_Click" Background="White" BorderBrush="#FFE4E4E4"/>
-            <Button Grid.Column="2" Grid.Row="0" DockPanel.Dock="Bottom" x:Name="SaveSettings" Content="Save settings" HorizontalAlignment="Right" VerticalAlignment="Top" MinHeight="40" MinWidth="140" Click="SaveSettings_Button_Click" Foreground="#FFD8D8D8" BorderBrush="#FF353535">
-                <Button.Background>
-                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <GradientStop Color="#FF250000"/>
-                        <GradientStop Color="#FF00123C" Offset="1"/>
-                    </LinearGradientBrush>
-                </Button.Background>
-            </Button>
+            <Button x:Name="RunTestLockScreen" Content="Run test lock" HorizontalAlignment="Left" VerticalAlignment="Center" MinHeight="40" MinWidth="90" Click="RunTestLockScreen_Button_Click" Background="White" BorderBrush="#FFE4E4E4"/>
+            <Button x:Name="SaveSettings" Content="Save settings" VerticalAlignment="Center" MinHeight="40" MinWidth="130" Click="SaveSettings_Button_Click" Background="White" BorderBrush="#FF353535" Grid.Column="2" Margin="8,0,0,0"/>
         </Grid>
     </Grid>
 </Window>

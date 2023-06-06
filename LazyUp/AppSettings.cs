@@ -63,11 +63,11 @@ namespace LazyUp
             }
         }
 
-        private bool _strictBreaks;
-        public bool StrictBreaks
+        private bool _reviveProgram;
+        public bool ReviveProgram
         {
-            get { return _strictBreaks; }    
-            set { _strictBreaks = value; }
+            get { return _reviveProgram; }    
+            set { _reviveProgram = value; }
         }
 
         private bool _lookHiddenRest;

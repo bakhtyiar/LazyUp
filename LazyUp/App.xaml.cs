@@ -15,6 +15,8 @@ using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using IWshRuntimeLibrary;
 using System.Diagnostics;
+using Xceed.Wpf.Toolkit;
+using System.Threading;
 
 namespace LazyUp
 {
@@ -40,20 +42,11 @@ namespace LazyUp
         private string startupFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
         private string programBrandName = "LazyUp";
         private string programPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString() + @"\LazyUp.exe";
+        private static string agentReviverProgramPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString() + @"\AgentOfLazyUp.exe";
+        private static Thread reviveThread;
 
         App()
         {
-        }
-        
-        System.Threading.Timer timer = new System.Threading.Timer(TimerElapse, null, 0, 5000);
-        static void TimerElapse(object? state)
-        {
-            Process[] processes = Process.GetProcessesByName("AgentOfLazyUp");
-            if (processes.Length == 0)
-            {
-                string exePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString() + @"\AgentOfLazyUp.exe";
-                Process.Start(exePath);
-            }
         }
 
         private void OnConfigChanged(object sender, FileSystemEventArgs e)
@@ -62,6 +55,7 @@ namespace LazyUp
             SetStartupProgram(config.StartupWithSystem);
             SetProgramVisibility(config.HideProgram);
             SetCloseInTray(config.CloseInTray);
+            ReviveAgentOfLazyUp(config.ReviveProgram);
         }
 
         private void SetCloseInTray(bool isCloseInTray)
@@ -120,7 +114,7 @@ namespace LazyUp
         private void NotifyIcon_DoubleClick(object sender, EventArgs e)
         {
             mainWindow = mainWindow ?? new MainWindow();
-            mainWindow.WindowState = WindowState.Normal;
+            mainWindow.WindowState = System.Windows.WindowState.Normal;
             mainWindow.Show();
             mainWindow.Activate();
         }
@@ -143,6 +137,59 @@ namespace LazyUp
             Current.Shutdown();
         }
 
+        private void ReviveAgentOfLazyUp(bool reviveProgram)
+        {
+
+            // Имя программы, которую нужно проверить
+            string processName = "AgentOfLazyUp";
+            CancellationTokenSource cts = new CancellationTokenSource();
+            Thread thread = new Thread(() => CheckAndStartProcess(cts.Token));
+
+            if (reviveProgram)
+            {
+                // Запускаем проверку в фоновом потоке
+                thread.Start();
+            }   else
+            {
+                cts.Cancel(); // Останавливаем поток
+
+                // Ищем процесс по имени
+                Process[] foundProcesses = Process.GetProcessesByName(processName);
+
+                // Если процесс найден, останавливаем его
+                if (foundProcesses.Length > 0)
+                {
+                    for (int i = 0; i < foundProcesses.Length; i++) { 
+                        foundProcesses[i].Kill();
+                    }
+                }
+            }
+
+            void CheckAndStartProcess(CancellationToken token)
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    Process[] foundProcesses = Process.GetProcessesByName(processName);
+                    // Проверяем, запущена ли программа
+                    if (foundProcesses.Length < 1)
+                    {
+                        // Программа не запущена, запускаем ее
+                        Process process = Process.Start(processName + ".exe");
+                        process.WaitForExit();
+                    } /*else if (foundProcesses.Length > 1)
+                    {
+                        for (int i = 0; i < foundProcesses.Length; i++)
+                        {
+                            foundProcesses[i].Kill();
+                        }
+                    }*/
+
+                    // Ждем перед следующей проверкой
+                    Thread.Sleep(5000);
+                }
+            }
+        }
+
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             _notifyIcon = new Forms.NotifyIcon();
@@ -157,7 +204,7 @@ namespace LazyUp
             if (!config.StartInTray)
             {
                 mainWindow = mainWindow ?? new MainWindow();
-                mainWindow.WindowState = WindowState.Normal;
+                mainWindow.WindowState = System.Windows.WindowState.Normal;
                 mainWindow.Show();
                 mainWindow.Activate();
             }
@@ -177,7 +224,10 @@ namespace LazyUp
             _notifyIcon.ContextMenuStrip = new Forms.ContextMenuStrip();
             _notifyIcon.ContextMenuStrip.Items.Add("Open", openIcon.ToBitmap(), NotifyIconOnClickedOpen);
             _notifyIcon.ContextMenuStrip.Items.Add("Close", closeIcon.ToBitmap(), NotifyIconOnClickedClose);
+
             SetProgramVisibility(config.HideProgram);
+
+            ReviveAgentOfLazyUp(config.ReviveProgram);
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)

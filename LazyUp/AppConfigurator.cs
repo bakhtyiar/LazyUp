@@ -31,7 +31,7 @@ namespace LazyUp {
             config.ThemeIsDark = Convert.ToBoolean(ConfigurationManager.AppSettings["themeIsDark"]);
             config.BreaksIntervalSec = Convert.ToInt32(ConfigurationManager.AppSettings["breaksIntervalSec"]);
             config.DurationBreakSec = Convert.ToInt32(ConfigurationManager.AppSettings["durationBreakSec"]);
-            config.StrictBreaks = Convert.ToBoolean(ConfigurationManager.AppSettings["strictBreaks"]);
+            config.ReviveProgram = Convert.ToBoolean(ConfigurationManager.AppSettings["reviveProgram"]);
             config.LookHiddenRest = Convert.ToBoolean(ConfigurationManager.AppSettings["lookHiddenRest"]);
             config.StartupWithSystem = Convert.ToBoolean(ConfigurationManager.AppSettings["startupWithSystem"]);
             config.StartInTray = Convert.ToBoolean(ConfigurationManager.AppSettings["startInTray"]);
