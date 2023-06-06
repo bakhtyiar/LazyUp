@@ -8,6 +8,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgentOfLazyUp", "AgentOfLazyUp\AgentOfLazyUp.csproj", "{5ACA8965-49CD-47D5-8B60-50CADF312692}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LazyUp", "LazyUp\LazyUp.csproj", "{A35A4F3A-B81E-4A65-86EA-FBDD966FF8AA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5ACA8965-49CD-47D5-8B60-50CADF312692} = {5ACA8965-49CD-47D5-8B60-50CADF312692}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
