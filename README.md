@@ -16,6 +16,6 @@ Open-source code base.
 ## How to try
 Open .exe in 
 ```
-./LazyUp/bin/Release/
+./bin/Release/
 ```
 Choose suitable for you builds' version
