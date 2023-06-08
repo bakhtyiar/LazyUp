@@ -14,8 +14,7 @@ Open-source code base.
 - Built by nuget 6
 
 ## How to try
-Open .exe in 
-```
-./bin/Release/
-```
-Choose suitable for you builds' version
+1. Open [Release](https://github.com/bakhtyiar/LazyUp/releases) section on the repository page. 
+2. Download suitable for your system variant. 
+3. Unzip it. 
+4. Run "LazyUp" binary (.exe, ...) file.
