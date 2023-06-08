@@ -1,19 +1,18 @@
-﻿using System.Configuration;
+﻿using Microsoft.CSharp.RuntimeBinder;
 using System;
-using System.Dynamic;
-using System.Xml.Linq;
-using Microsoft.CSharp.RuntimeBinder;
+using System.CodeDom;
+using System.Configuration;
 using System.Reflection;
 
-namespace LazyUp {
+namespace LazyUp
+{
     internal class AppConfigurator
     {
         private static AppConfigurator? instance;
-        
+
         public static AppConfigurator GetInstance()
         {
-            if (instance == null)
-                instance = new AppConfigurator();
+            instance ??= new AppConfigurator();
             return instance;
         }
 
@@ -39,16 +38,23 @@ namespace LazyUp {
             config.HideProgram = Convert.ToBoolean(ConfigurationManager.AppSettings["hideProgram"]);
         }
 
-        public void UpdateConfig(dynamic data)
+        public void UpdateConfig(ref AppSettings config)
         {
 
-            PropertyInfo[] properties = typeof(AppSettings).GetProperties();
+            PropertyInfo[] properties = config.GetType().GetProperties();
 
             foreach (PropertyInfo property in properties)
             {
                 try
                 {
-                    UpdateSetting(property.Name, property.GetValue(config).ToString());
+                    string? value = property.GetValue(config).ToString();
+                    if (value is not null)
+                    {
+                        UpdateSetting(property.Name, value);
+                    } else
+                    {
+                        throw new Exception("Couldn't update setting. Value is null");
+                    }
                 }
                 catch (RuntimeBinderException ex)
                 {

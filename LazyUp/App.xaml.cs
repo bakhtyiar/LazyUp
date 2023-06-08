@@ -341,7 +341,10 @@ namespace LazyUp
             }
             SetProgramVisibility(ref _notifyIcon, _config.HideProgram);
 
-            SetUpBreaksTimer(ref _timerBreakInterval, _config.BreaksIntervalSec, _config.DurationBreakSec, StartBreak);
+            if (_config.BreaksIntervalSec > 0 && _config.DurationBreakSec > 0)
+            {
+                SetUpBreaksTimer(ref _timerBreakInterval, _config.BreaksIntervalSec, _config.DurationBreakSec, StartBreak);
+            }
             SetCloseInTray(out _shutdownModeValue, _config.CloseInTray);
             SetUpConfigWatcher(ref _configWatcher);
             ReviveAgentOfLazyUp(_config.ReviveProgram);

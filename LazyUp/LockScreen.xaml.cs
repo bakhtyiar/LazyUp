@@ -33,19 +33,20 @@ namespace LazyUp
         private const int GWL_EX_STYLE = -20;
         private const int WS_EX_APPWINDOW = 0x00040000, WS_EX_TOOLWINDOW = 0x00000080;
 
-        private AppSettings config = AppConfigurator.GetInstance().config;
+        readonly private AppSettings _config = AppSettings.GetInstance();
 
-        private int breakSecsLast;
-        private int timeIntervalSec;
-        private Timer timerIntervalForChanges;
-        private Timer timerToClose;
+        private int _breakSecsLast;
+        readonly private int _timeIntervalSec;
+        readonly private Timer _timerIntervalForChanges;
+        readonly private Timer _timerToClose;
 
         private delegate void TimeLastOutput();
-        private void SetTimerText(TextBlock textBlock, ref int secsLast)
+        static private void SetTimerText(TextBlock textBlock, ref int secsLast)
         {
-            int hours = secsLast / 60 / 60;
-            int minutes = (secsLast / 60) - (60 * hours);
-            int seconds = (secsLast) - (60 * minutes) - (60 * 60 * hours);
+            TimeSpan ts = TimeSpan.FromSeconds(secsLast);
+            int hours = ts.Hours;
+            int minutes = ts.Minutes;
+            int seconds = ts.Seconds;
             string text = "";
             if (hours > 0)
             {
@@ -69,7 +70,7 @@ namespace LazyUp
         }
         
         private delegate void TimelineOutput();
-        private void SetTimelineBarValue(ProgressBar timeline, int value)
+        static private void SetTimelineBarValue(ProgressBar timeline, int value)
         {
             timeline.Dispatcher.BeginInvoke(() =>
             {
@@ -79,25 +80,25 @@ namespace LazyUp
 
         public LockScreen()
         {
-            breakSecsLast = config.DurationBreakSec;
-            timeIntervalSec = 1;
+            _breakSecsLast = _config.DurationBreakSec;
+            _timeIntervalSec = 1;
 
-            timerIntervalForChanges = new System.Timers.Timer();
-            timerIntervalForChanges.Interval = timeIntervalSec * 1000;
-            timerIntervalForChanges.Elapsed += OnTimedEvent;
-            timerIntervalForChanges.AutoReset = true;
-            timerIntervalForChanges.Enabled = true;
+            _timerIntervalForChanges = new System.Timers.Timer();
+            _timerIntervalForChanges.Interval = _timeIntervalSec * 1000;
+            _timerIntervalForChanges.Elapsed += OnTimedEvent;
+            _timerIntervalForChanges.AutoReset = true;
+            _timerIntervalForChanges.Enabled = true;
 
-            timerToClose = new System.Timers.Timer();
-            timerToClose.Interval = config.DurationBreakSec * 1000;
-            timerToClose.Elapsed += closeLockScreenOnTimeout;
-            timerToClose.AutoReset = false;
-            timerToClose.Enabled = true;
+            _timerToClose = new System.Timers.Timer();
+            _timerToClose.Interval = _config.DurationBreakSec * 1000;
+            _timerToClose.Elapsed += CloseLockScreenOnTimeout;
+            _timerToClose.AutoReset = false;
+            _timerToClose.Enabled = true;
 
             InitializeComponent();
         }
 
-        private void closeLockScreenOnTimeout(Object source, System.Timers.ElapsedEventArgs e)
+        private void CloseLockScreenOnTimeout(Object? source, System.Timers.ElapsedEventArgs e)
         {
             // isWindowClosable = false;
             Dispatcher.BeginInvoke(() => { this.Visibility = Visibility.Hidden; });
@@ -106,8 +107,8 @@ namespace LazyUp
 
         private void Header_Initialized(object sender, EventArgs e)
         {
-            Header.Text = config.LockScreenHeader;
-            if (config.ThemeIsDark)
+            Header.Text = _config.LockScreenHeader;
+            if (_config.ThemeIsDark)
             {
                 Header.Foreground = Brushes.White;
             } else
@@ -118,8 +119,8 @@ namespace LazyUp
 
         private void Paragraph_Initialized(object sender, EventArgs e)
         {
-            Paragraph.Text = config.LockScreenParagraph;
-            if (config.ThemeIsDark)
+            Paragraph.Text = _config.LockScreenParagraph;
+            if (_config.ThemeIsDark)
             {
                 Paragraph.Foreground = Brushes.White;
             }
@@ -129,19 +130,20 @@ namespace LazyUp
             }
         }
 
-        private void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
+        private void OnTimedEvent(Object? source, System.Timers.ElapsedEventArgs e)
         {
-            breakSecsLast -= timeIntervalSec;
-            SetTimerText(TimeLast, ref breakSecsLast);
-            int lineLastPercentage = breakSecsLast * 100 / config.DurationBreakSec;
+            _breakSecsLast -= _timeIntervalSec;
+            SetTimerText(TimeLast, ref _breakSecsLast);
+            _config.DurationBreakSec = _config.DurationBreakSec == 0 ? 1 : _config.DurationBreakSec;
+            int lineLastPercentage = _breakSecsLast * 100 / (_config.DurationBreakSec);
             SetTimelineBarValue(TimelineBar, lineLastPercentage);
         }
 
         private void TimeLast_Initialized(object sender, EventArgs e)
         {
-            int secsLast = config.DurationBreakSec;
+            int secsLast = _config.DurationBreakSec;
             SetTimerText(TimeLast, ref secsLast);
-            if (config.ThemeIsDark)
+            if (_config.ThemeIsDark)
             {
                 TimeLast.Foreground = Brushes.White;
             }
@@ -154,7 +156,7 @@ namespace LazyUp
         private void TimelineBar_Initialized(object sender, EventArgs e)
         {
             TimelineBar.Value = 100;
-            if (config.ThemeIsDark)
+            if (_config.ThemeIsDark)
             {
                 TimelineBar.Foreground = Brushes.White;
             }
@@ -180,7 +182,7 @@ namespace LazyUp
 
         private void Window_Initialized(object sender, EventArgs e)
         {
-            if (config.ThemeIsDark)
+            if (_config.ThemeIsDark)
             {
                 this.Background = Brushes.Black;
             }

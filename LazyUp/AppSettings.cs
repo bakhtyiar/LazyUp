@@ -13,8 +13,7 @@ namespace LazyUp
 
         public static AppSettings GetInstance()
         {
-            if (instance == null)
-                instance = new AppSettings();
+            instance ??= new AppSettings();
             return instance;
         }
 
