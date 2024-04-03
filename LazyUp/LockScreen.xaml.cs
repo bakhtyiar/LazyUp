@@ -17,6 +17,8 @@ using static System.Net.Mime.MediaTypeNames;
 using System.Runtime.InteropServices;
 using System.Reflection.Metadata;
 using System.Windows.Interop;
+using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace LazyUp
 {
@@ -37,8 +39,8 @@ namespace LazyUp
 
         private int _breakSecsLast;
         readonly private int _timeIntervalSec;
-        readonly private Timer _timerIntervalForChanges;
-        readonly private Timer _timerToClose;
+        readonly private System.Timers.Timer _timerIntervalForChanges;
+        readonly private System.Timers.Timer _timerToClose;
 
         private delegate void TimeLastOutput();
         static private void SetTimerText(TextBlock textBlock, ref int secsLast)
@@ -70,13 +72,75 @@ namespace LazyUp
         }
         
         private delegate void TimelineOutput();
-        static private void SetTimelineBarValue(ProgressBar timeline, int value)
+        static private void SetTimelineBarValue(System.Windows.Controls.ProgressBar timeline, int value)
         {
             timeline.Dispatcher.BeginInvoke(() =>
             {
                 timeline.Value = value;
             });
         }
+
+        protected override void OnPreviewKeyDown(System.Windows.Input.KeyEventArgs e)
+        {
+            // Проверяем нажатие комбинации Win + Tab
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Windows && e.Key == Key.Tab)
+            {
+                e.Handled = true; // Блокируем обработку клавиши
+            }
+
+            base.OnPreviewKeyDown(e);
+        }
+
+        /* Code to Disable WinKey, Alt+Tab, Ctrl+Esc Starts Here */
+
+    // Structure contain information about low-level keyboard input event 
+    [StructLayout(LayoutKind.Sequential)]
+    private struct KBDLLHOOKSTRUCT
+    {
+        public Keys key;
+        public int scanCode;
+        public int flags;
+        public int time;
+        public IntPtr extra;
+    }
+    //System level functions to be used for hook and unhook keyboard input  
+    private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    private static extern IntPtr SetWindowsHookEx(int id, LowLevelKeyboardProc callback, IntPtr hMod, uint dwThreadId);
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    private static extern bool UnhookWindowsHookEx(IntPtr hook);
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    private static extern IntPtr CallNextHookEx(IntPtr hook, int nCode, IntPtr wp, IntPtr lp);
+    [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    private static extern IntPtr GetModuleHandle(string name);
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    private static extern short GetAsyncKeyState(Keys key);
+    //Declaring Global objects     
+    private IntPtr ptrHook;
+    private LowLevelKeyboardProc objKeyboardProcess;
+
+    private IntPtr captureKey(int nCode, IntPtr wp, IntPtr lp)
+    {
+        if (nCode >= 0)
+        {
+            KBDLLHOOKSTRUCT objKeyInfo = (KBDLLHOOKSTRUCT)Marshal.PtrToStructure(lp, typeof(KBDLLHOOKSTRUCT));
+
+            // Disabling Windows keys 
+
+            if (objKeyInfo.key == Keys.RWin || objKeyInfo.key == Keys.LWin || objKeyInfo.key == Keys.Tab && HasAltModifier(objKeyInfo.flags) || objKeyInfo.key == Keys.Escape)     
+            {
+                return (IntPtr)1; // if 0 is returned then All the above keys will be enabled
+            }
+        }
+        return CallNextHookEx(ptrHook, nCode, wp, lp);
+    }
+
+    bool HasAltModifier(int flags)
+    {
+        return (flags & 0x20) == 0x20;
+    }
+
+    /* Code to Disable WinKey, Alt+Tab, Ctrl+Esc Ends Here */
 
         public LockScreen()
         {
@@ -101,6 +165,7 @@ namespace LazyUp
         private void CloseLockScreenOnTimeout(Object? source, System.Timers.ElapsedEventArgs e)
         {
             // isWindowClosable = false;
+            UnhookWindowsHookEx(ptrHook);
             Dispatcher.BeginInvoke(() => { this.Visibility = Visibility.Hidden; });
             Dispatcher.BeginInvoke(() => { this.Close(); });
         }
@@ -182,6 +247,9 @@ namespace LazyUp
 
         private void Window_Initialized(object sender, EventArgs e)
         {
+            ProcessModule objCurrentModule = Process.GetCurrentProcess().MainModule;
+            objKeyboardProcess = new LowLevelKeyboardProc(captureKey);
+            ptrHook = SetWindowsHookEx(13, objKeyboardProcess, GetModuleHandle(objCurrentModule.ModuleName), 0);
             if (_config.ThemeIsDark)
             {
                 this.Background = Brushes.Black;
