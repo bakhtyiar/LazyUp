@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LazyUp", "LazyUp\LazyUp.csp
 		{5ACA8965-49CD-47D5-8B60-50CADF312692} = {5ACA8965-49CD-47D5-8B60-50CADF312692}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InputDeviceLogger", "InputDeviceLogger\InputDeviceLogger.csproj", "{81FE4FD2-D7D1-475E-A8DC-D49E20B3A308}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{A35A4F3A-B81E-4A65-86EA-FBDD966FF8AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A35A4F3A-B81E-4A65-86EA-FBDD966FF8AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A35A4F3A-B81E-4A65-86EA-FBDD966FF8AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81FE4FD2-D7D1-475E-A8DC-D49E20B3A308}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81FE4FD2-D7D1-475E-A8DC-D49E20B3A308}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81FE4FD2-D7D1-475E-A8DC-D49E20B3A308}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81FE4FD2-D7D1-475E-A8DC-D49E20B3A308}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

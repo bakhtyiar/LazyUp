@@ -1,0 +1,23 @@
+﻿<Window x:Class="InputDeviceLogger.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:InputDeviceLogger"
+        mc:Ignorable="d"
+        Title="LazyUp Device logger" Height="220" Width="300">
+    <Grid>
+        <StackPanel>
+            <GroupBox Header="Modes" Margin="8,8,8,8">
+                <StackPanel>
+                    <RadioButton Content="Don't disturb me" FontSize="14" Checked="DontDisturbRadioButton_Checked"/>
+                    <RadioButton Content="You can disturb me" FontSize="14" Checked="DisturbRadioButton_Checked"/>
+                </StackPanel>
+            </GroupBox>
+            <TextBlock TextWrapping="Wrap" Text="Path to logs"  Margin="8,0,8,4"/>
+            <TextBox x:Name="PathToLogs" TextWrapping="Wrap" Width="283"  Margin="8,0,8,8" HorizontalAlignment="Left" Height="20" Initialized="PathToLogs_Initialized" TextChanged="PathToLogs_TextChanged"/>
+            <Button Content="Start recording" Margin="8,0,8,8" MinHeight="24" Click="StartRecordButton_Click"/>
+            <Button Content="Analyze logs (not implemented)" Margin="8,0,8,8" MinHeight="24" IsEnabled="False" Click="AnalyzeLogsButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
