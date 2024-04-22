@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:InputDeviceLogger"
         mc:Ignorable="d"
-        Title="LazyUp Device logger" Height="220" Width="300">
+        Title="LazyUp Device logger" Height="240" Width="300">
     <Grid>
         <StackPanel>
             <GroupBox Header="Modes" Margin="8,8,8,8">
@@ -14,9 +14,9 @@
                     <RadioButton Content="You can disturb me" FontSize="14" Checked="DisturbRadioButton_Checked"/>
                 </StackPanel>
             </GroupBox>
-            <TextBlock TextWrapping="Wrap" Text="Path to logs"  Margin="8,0,8,4"/>
-            <TextBox x:Name="PathToLogs" TextWrapping="Wrap" Width="283"  Margin="8,0,8,8" HorizontalAlignment="Left" Height="20" Initialized="PathToLogs_Initialized" TextChanged="PathToLogs_TextChanged"/>
-            <Button Content="Start recording" Margin="8,0,8,8" MinHeight="24" Click="StartRecordButton_Click"/>
+            <Button x:Name="btn_startrec" Content="Start recording" Margin="8,0,8,8" MinHeight="24" Click="StartRecordButton_Click"/>
+            <Button x:Name="btn_stoprec" Content="Stop recording" MinHeight="24" Margin="8,0,8,8" IsEnabled="False" Click="StopRecordButton_Click">
+            </Button>
             <Button Content="Analyze logs (not implemented)" Margin="8,0,8,8" MinHeight="24" IsEnabled="False" Click="AnalyzeLogsButton_Click"/>
         </StackPanel>
     </Grid>
