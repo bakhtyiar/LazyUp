@@ -10,8 +10,8 @@
         <StackPanel>
             <GroupBox Header="Modes" Margin="8,8,8,8">
                 <StackPanel>
-                    <RadioButton Content="Don't disturb me" FontSize="14" Checked="DontDisturbRadioButton_Checked"/>
-                    <RadioButton Content="You can disturb me" FontSize="14" Checked="DisturbRadioButton_Checked"/>
+                    <RadioButton x:Name="Radiobtn_DontDisturbMe" GroupName="logMode" Content="Don't disturb me" FontSize="14" Checked="DontDisturbRadioButton_Checked" Initialized="Radiobtn_DontDisturbMe_Initialized"/>
+                    <RadioButton x:Name="Radiobtn_DisturbMe" GroupName="logMode" Content="You can disturb me" FontSize="14" Checked="DisturbRadioButton_Checked" Initialized="Radiobtn_DisturbMe_Initialized"/>
                 </StackPanel>
             </GroupBox>
             <Button x:Name="btn_startrec" Content="Start recording" Margin="8,0,8,8" MinHeight="24" Click="StartRecordButton_Click"/>

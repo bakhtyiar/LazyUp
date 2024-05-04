@@ -26,6 +26,7 @@ namespace InputDeviceLogger
         public void ParseConfig()
         {
             config.LogsPath = ConfigurationManager.AppSettings["LogsPath"] ?? "./defaultInputLogs/";
+            config.LoggingMode = ConfigurationManager.AppSettings["LoggingMode"] ?? "DontDisturb";
         }
 
         public void UpdateConfig(ref AppSettings config)

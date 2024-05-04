@@ -24,6 +24,13 @@ namespace InputDeviceLogger
             set { _logsPath = value; }
         }
 
+        private string? _loggingMode;
+        public string LoggingMode
+        {
+            get { return _loggingMode ?? ""; }
+            set { _loggingMode = value; }
+        }
+
         internal AppSettings() {
         }
     }

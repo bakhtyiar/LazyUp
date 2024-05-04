@@ -24,9 +24,11 @@ namespace InputDeviceLogger
     /// </summary>
     public partial class MainWindow : Window
     {
+        private const string dontDisturb = "DontDisturb";
+        private const string disturb = "Disturb";
         readonly private AppConfigurator _appConfigurator = AppConfigurator.GetInstance();
         static private AppSettings _appSettings = AppSettings.GetInstance();
-        static string logFileName = $"{DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss")}.txt";
+        static string logFileName = $"{_appSettings.LoggingMode}_{DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss")}.txt";
         static string logPath = System.IO.Path.Combine(_appSettings.LogsPath, logFileName);
         private static IKeyboardMouseEvents m_GlobalHook;
 
@@ -34,6 +36,8 @@ namespace InputDeviceLogger
         {
             InitializeComponent();
         }
+
+
 
         static private string getValueTextBox(object sender)
         {
@@ -44,12 +48,14 @@ namespace InputDeviceLogger
 
         private void DontDisturbRadioButton_Checked(object sender, RoutedEventArgs e)
         {
-
+            _appConfigurator.UpdateSetting("LoggingMode", dontDisturb);
+            _appSettings.LoggingMode = dontDisturb;
         }
 
         private void DisturbRadioButton_Checked(object sender, RoutedEventArgs e)
         {
-
+            _appConfigurator.UpdateSetting("LoggingMode", disturb);
+            _appSettings.LoggingMode = disturb;
         }
 
         private void StartRecordButton_Click(object sender, RoutedEventArgs e)
@@ -62,6 +68,8 @@ namespace InputDeviceLogger
             {
                 Directory.CreateDirectory(_appSettings.LogsPath);
             }
+            logFileName = $"{_appSettings.LoggingMode}_{DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss")}.txt";
+            logPath = System.IO.Path.Combine(_appSettings.LogsPath, logFileName);
             if (!File.Exists(logPath))
             {
                 using (FileStream fs = File.Create(logPath))
@@ -72,16 +80,20 @@ namespace InputDeviceLogger
             m_GlobalHook = Hook.GlobalEvents();
 
             m_GlobalHook.KeyDown += GlobalHookKeyDown;
+            m_GlobalHook.KeyUp+= GlobalHookKeyUp;
 
             m_GlobalHook.MouseDownExt += GlobalHookMouseDown;
+            m_GlobalHook.MouseUpExt += GlobalHookMouseUp;
 
 
             using (StreamWriter writer = File.AppendText(logPath))
             {
                 Console.WriteLine("Начало записи...");
-                MouseLeftButtonDown += MainWindow_MouseLeftButtonDown;
-                MouseRightButtonDown += MainWindow_MousRightButtonDown;
                 PreviewKeyDown += MainWindow_PreviewKeyDown;
+                PreviewKeyUp+= MainWindow_PreviewKeyUp;
+                MouseWheel += MainWindow_MouseWheel;
+                MouseDown += MainWindow_MouseDown;
+                MouseUp += MainWindow_MouseUp;
                 Console.WriteLine($"Лог записан в файл: {logPath}");
             }
         }
@@ -97,7 +109,14 @@ namespace InputDeviceLogger
         {
             using (StreamWriter writer = File.AppendText(logPath))
             {
-                writer.WriteLine($"[{DateTime.Now}] Key:[{e.KeyCode}]");
+                writer.WriteLine($"[{DateTime.Now}][Keyboard][Down][{e.KeyCode}]");
+            }
+        }
+        private static void GlobalHookKeyUp(object? sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            using (StreamWriter writer = File.AppendText(logPath))
+            {
+                writer.WriteLine($"[{DateTime.Now}][Keyboard][Up][{e.KeyCode}]");
             }
         }
 
@@ -105,7 +124,14 @@ namespace InputDeviceLogger
         {
             using (StreamWriter writer = File.AppendText(logPath))
             {
-                writer.WriteLine($"[{DateTime.Now}] Mouse:[left_btn]");
+                writer.WriteLine($"[{DateTime.Now}][Mouse][Down][{e.Button}]");
+            }
+        }
+        private static void GlobalHookMouseUp(object sender, MouseEventExtArgs e)
+        {
+            using (StreamWriter writer = File.AppendText(logPath))
+            {
+                writer.WriteLine($"[{DateTime.Now}][Mouse][Down][{e.Button}]");
             }
         }
         private void AnalyzeLogsButton_Click(object sender, RoutedEventArgs e)
@@ -117,23 +143,46 @@ namespace InputDeviceLogger
         {
             using (StreamWriter writer = File.AppendText(logPath))
             {
-                writer.WriteLine($"[{DateTime.Now}] Key:[{e.Key}]");
+                writer.WriteLine($"[{DateTime.Now}][Keyboard][Down][{e.Key}]");
+            }
+        }
+        private void MainWindow_PreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            using (StreamWriter writer = File.AppendText(logPath))
+            {
+                writer.WriteLine($"[{DateTime.Now}][Keyboard][Up][{e.Key}]");
+            }
+        }
+        private void MainWindow_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            using (StreamWriter writer = File.AppendText(logPath))
+            {
+                writer.WriteLine($"[{DateTime.Now}][Mouse][Down][{e.ChangedButton}]");
+            }
+        }
+        private void MainWindow_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            using (StreamWriter writer = File.AppendText(logPath))
+            {
+                writer.WriteLine($"[{DateTime.Now}][Mouse][Up][{e.ChangedButton}]");
+            }
+        }
+        private void MainWindow_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            using (StreamWriter writer = File.AppendText(logPath))
+            {
+                writer.WriteLine($"[{DateTime.Now}][Mouse][Wheel][{e.Delta}]");
             }
         }
 
-        private void MainWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Radiobtn_DisturbMe_Initialized(object sender, EventArgs e)
         {
-            using (StreamWriter writer = File.AppendText(logPath))
-            {
-                writer.WriteLine($"[{DateTime.Now}] Mouse:[left_btn]");
-            }
+            Radiobtn_DisturbMe.IsChecked = _appSettings.LoggingMode == disturb;
         }
-        private void MainWindow_MousRightButtonDown(object sender, MouseButtonEventArgs e)
+
+        private void Radiobtn_DontDisturbMe_Initialized(object sender, EventArgs e)
         {
-            using (StreamWriter writer = File.AppendText(logPath))
-            {
-                writer.WriteLine($"[{DateTime.Now}] Mouse:[right_btn]");
-            }
+            Radiobtn_DontDisturbMe.IsChecked = _appSettings.LoggingMode == dontDisturb;
         }
     }
 }
