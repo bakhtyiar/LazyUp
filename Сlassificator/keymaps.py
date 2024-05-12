@@ -1,3 +1,11 @@
+ModeNames = {
+    "DontDisturb": 0,
+    "Disturb": 1
+}
+DeviceKey = {
+    "Keyboard": 1,
+    "Mouse": 2,
+}
 ButtonDirection = {
     "None": 0,
     "Down": 1,

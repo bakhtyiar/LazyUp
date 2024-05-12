@@ -1,35 +1,76 @@
 import keymaps
-from utils import getTimestamp
+import utils
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, TimeDistributed, Flatten
 from tensorflow.keras.utils import to_categorical
+import os
 
-data = [
-    ["12.05.2024 18:15:26", "Keyboard", "Down", "D1"], 
-    ["12.05.2024 18:15:26", "Keyboard", "Down", "D1"], 
-    ["12.05.2024 18:15:26", "Keyboard", "Down", "D2"], 
-    ["12.05.2024 18:15:26", "Keyboard", "Down", "D2"], 
-    ["12.05.2024 18:15:26", "Keyboard", "Down", "D3"], 
-    ["12.05.2024 18:15:26", "Keyboard", "Down", "D3",]  
-    ["12.05.2024 18:15:26", "Keyboard", "Up", "D1",  ]  
-    ["12.05.2024 18:15:26", "Keyboard", "Up", "D1"], 
-    ["12.05.2024 18:15:26", "Keyboard", "Up", "D2"], 
-    ["12.05.2024 18:15:26", "Keyboard", "Up", "D2"], 
-    ["12.05.2024 18:15:27", "Keyboard", "Up", "D3"], 
-    ["12.05.2024 18:15:27", "Keyboard", "Up", "D3"], 
-    ["12.05.2024 18:15:27", "Mouse", "Down", "Left"], 
-    ["12.05.2024 18:15:27", "Mouse", "Down", "Left"], 
-    ["12.05.2024 18:15:27", "Mouse", "Down", "Right"], 
-    ["12.05.2024 18:15:27", "Mouse", "Down", "Right"], 
-    ["12.05.2024 18:15:27", "Mouse", "Down", "XButton2"], 
-    ["12.05.2024 18:15:27", "Mouse", "Down", "XButton2"], 
-]
+# Путь к директории с файлами
+defaultLogsDirectory = "./logs"
 
-def preprocess_data(data):
+def parseData(directory):
+    ret = []
+    for filename in os.listdir(directory):
+        if filename.endswith(".txt"):
+            with open(os.path.join(directory, filename), 'r') as file:
+                modeName = filename.split('_')[0]
+                for line in file:
+                    data = utils.splitRec(line)
+                    data.append(modeName)
+                    ret.append = data
+    return ret
+
+def remapData(data):
+    for line in data:
+        line[0] = utils.getTimestamp(line[0])
+        line[1] = keymaps.DeviceKey.get(line[1], line[1])
+        line[2] = keymaps.ButtonDirection.get(line[2], line[2])
+        if (line[1] == keymaps.DeviceKey["Keyboard"]):
+            line[3] = keymaps.KeyboardButtons.get(line[3], line[3])
+        else:
+            line[3] = keymaps.MouseButtons.get(line[3], line[3])
+        line[4] = keymaps.ModeNames.get(line[4], line[4])
+    return data
+
+# remapData() Пример полученных данных
+# data = [
+#     ["12.05.2024 18:15:26", "Keyboard", "Down", "D1", "Disturb"], 
+#     ["12.05.2024 18:15:26", "Keyboard", "Down", "D1", "Disturb"], 
+#     ["12.05.2024 18:15:26", "Keyboard", "Down", "D2", "Disturb"], 
+#     ["12.05.2024 18:15:26", "Keyboard", "Down", "D2", "Disturb"], 
+#     ["12.05.2024 18:15:26", "Keyboard", "Down", "D3", "Disturb"], 
+#     ["12.05.2024 18:15:26", "Keyboard", "Down", "D3", "Disturb"]  
+#     ["12.05.2024 18:15:26", "Keyboard", "Up", "D1", "Disturb"]  
+#     ["12.05.2024 18:15:26", "Keyboard", "Up", "D1", "Disturb"], 
+#     ["12.05.2024 18:15:26", "Keyboard", "Up", "D2", "Disturb"], 
+#     ["12.05.2024 18:15:26", "Keyboard", "Up", "D2", "Disturb"], 
+#     ["12.05.2024 18:15:27", "Keyboard", "Up", "D3", "Disturb"], 
+#     ["12.05.2024 18:15:27", "Keyboard", "Up", "D3", "Disturb"], 
+#     ["12.05.2024 18:15:27", "Mouse", "Down", "Left", "Disturb"], 
+#     ["12.05.2024 18:15:27", "Mouse", "Down", "Left", "Disturb"], 
+#     ["12.05.2024 18:15:27", "Mouse", "Down", "Right", "Disturb"], 
+#     ["12.05.2024 18:15:27", "Mouse", "Down", "Right", "Disturb"], 
+#     ["12.05.2024 18:15:27", "Mouse", "Down", "XButton2", "Disturb"], 
+#     ["12.05.2024 18:15:27", "Mouse", "Down", "XButton2", "Disturb"], 
+# ]
+
+def preprocess_data(directory):
+    parsedData = parseData(directory)
+    print("parsedData")
+    print(parsedData)
+    mappedData = remapData(parsedData)
+    print("mappedData")
+    print(mappedData)
     # Пример данных: (timestamp, [(deviceNumber, buttonNumber, isPress), ...], targetValue)
-    timestamps, sequences, targets = zip(*data)
+    timestamps, sequences, targets = zip(*mappedData)
+    print("timestamps")
+    print(timestamps)
+    print("sequences")
+    print(sequences)
+    print("targets")
+    print(targets)
     # Нормализация временных меток
     timestamps = np.array(timestamps) / np.max(timestamps)
     # Преобразование последовательностей
@@ -52,19 +93,9 @@ def build_model(input_shape):
     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
     return model
 
-# Пример данных для демонстрации
-example_data = [
-    (1234567890, [(1, 2, True), (2, 3, False)], 0.8),
-    (1234567891, [(3, 1, True)], 0.3)
-]
-
-timestamps, sequences_padded, targets = preprocess_data(example_data)
+timestamps, sequences_padded, targets = preprocess_data(defaultLogsDirectory)
 model = build_model(sequences_padded[0].shape)
 model.fit([timestamps, sequences_padded], targets, epochs=10, batch_size=2)
-
-test_data = [
-    (1234567895, [(1, 3, True), (3, 3, True)], 0.9)
-]
-test_timestamps, test_sequences_padded, test_targets = preprocess_data(test_data)
-loss, accuracy = model.evaluate([test_timestamps, test_sequences_padded], test_targets)
-print(f"Точность модели: {accuracy}")
+# test_timestamps, test_sequences_padded, test_targets = preprocess_data(test_data)
+# loss, accuracy = model.evaluate([test_timestamps, test_sequences_padded], test_targets)
+# print(f"Точность модели: {accuracy}")
