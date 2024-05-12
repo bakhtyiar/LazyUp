@@ -2,9 +2,9 @@ import keymaps
 import utils
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, LSTM, TimeDistributed, Flatten
-from tensorflow.keras.utils import to_categorical
+import numpy as np
+from keras.models import Sequential
+from keras.layers import Dense
 import os
 
 # Путь к директории с файлами
@@ -19,7 +19,7 @@ def parseData(directory):
                 for line in file:
                     data = utils.splitRec(line)
                     data.append(modeName)
-                    ret.append = data
+                    ret.append(data)
     return ret
 
 def remapData(data):
@@ -63,25 +63,12 @@ def preprocess_data(directory):
     mappedData = remapData(parsedData)
     print("mappedData")
     print(mappedData)
-    # Пример данных: (timestamp, [(deviceNumber, buttonNumber, isPress), ...], targetValue)
-    timestamps, sequences, targets = zip(*mappedData)
-    print("timestamps")
-    print(timestamps)
-    print("sequences")
-    print(sequences)
-    print("targets")
-    print(targets)
-    # Нормализация временных меток
-    timestamps = np.array(timestamps) / np.max(timestamps)
-    # Преобразование последовательностей
-    sequences = [np.array([(dev_num, btn_num, int(is_press)) for dev_num, btn_num, is_press in seq]) for seq in sequences]
-    # Выравнивание длины последовательностей
-    max_len = max(len(seq) for seq in sequences)
-    sequences_padded = np.array([np.pad(seq, ((0, max_len - len(seq)), (0, 0)), mode='constant') for seq in sequences])
-    # Преобразование целевых меток
-    targets = np.array(targets)
-    return timestamps, sequences_padded, targets
-
+    # Преобразование в np.array
+    data_array = np.array(mappedData)
+    # Разделение на X и Y
+    X = data_array[:, 1:4]  # Выбор столбцов 1-4 (индексы 1, 2, 3, 4)
+    Y = data_array[:, 4]  # Выбор столбца 4 (индекс 4)
+    return X, Y
 
 def build_model(input_shape):
     model = Sequential([
@@ -93,9 +80,19 @@ def build_model(input_shape):
     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
     return model
 
-timestamps, sequences_padded, targets = preprocess_data(defaultLogsDirectory)
-model = build_model(sequences_padded[0].shape)
-model.fit([timestamps, sequences_padded], targets, epochs=10, batch_size=2)
-# test_timestamps, test_sequences_padded, test_targets = preprocess_data(test_data)
-# loss, accuracy = model.evaluate([test_timestamps, test_sequences_padded], test_targets)
-# print(f"Точность модели: {accuracy}")
+# preprocess_data(defaultLogsDirectory)
+X, y = preprocess_data(defaultLogsDirectory)
+print("X")
+print(X)
+print("Y")
+print(y)
+# Построение модели
+model = Sequential()
+model.add(Dense(64, input_shape=(X.shape[1],), activation='relu'))  # Пример слоя Dense
+model.add(Dense(1, activation='sigmoid'))  # Выходной слой
+# Компиляция модели
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])  # Функция потерь и метрика
+# Обучение модели
+model.fit(X, y, epochs=10, batch_size=32, validation_split=0.2)  # Пример обучения на данных
+# Получение вероятностей
+predictions = model.predict(X)  # Получение предсказаний модели для ваших данных
